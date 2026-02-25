@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SniperFi — Dashboard</title>
+<link rel="icon" type="image/svg+xml" href="./assets/icons/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --neon:#00ff88;--neon-dim:#00ff8840;--neon-glow:#00ff8815;
+  --red:#ff3355;--red-dim:#ff335530;
+  --yellow:#ffaa00;--yellow-dim:#ffaa0030;
+  --blue:#3388ff;--blue-dim:#3388ff30;
+  --bg:#07070c;--bg2:#0d0d14;--bg3:#14141e;--bg4:#1a1a28;
+  --text:#e8e8f0;--text-dim:#6b6b88;--border:#1e1e30;--border-lt:#2a2a40;
+}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* LAYOUT */
+.app{display:grid;grid-template-columns:220px 1fr;grid-template-rows:52px 1fr;min-height:100vh}
+
+/* TOPBAR */
+.topbar{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:var(--bg2);border-bottom:1px solid var(--border);z-index:10}
+.topbar-left{display:flex;align-items:center;gap:16px}
+.logo{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:17px;color:var(--neon);text-shadow:0 0 14px var(--neon-dim);display:flex;align-items:center;gap:8px}
+.logo-icon{width:26px;height:26px;border:2px solid var(--neon);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 0 10px var(--neon-dim)}
+.net-badge{display:flex;align-items:center;gap:6px;padding:3px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim)}
+.net-dot{width:5px;height:5px;background:var(--neon);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.bal{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);padding:5px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:5px}
+.bal span{color:var(--text-dim)}
+.wallet-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--neon);color:var(--bg);border:none;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;box-shadow:0 0 12px var(--neon-dim);transition:all .2s}
+.wallet-btn:hover{box-shadow:0 0 22px var(--neon-dim)}
+.wallet-btn.connected{background:var(--bg3);color:var(--neon);border:1px solid var(--neon-dim);box-shadow:none}
+
+/* SIDEBAR */
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:12px 0;display:flex;flex-direction:column;gap:2px}
+.sb-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-dim);text-transform:uppercase;letter-spacing:2px;padding:10px 16px 4px}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 12px;margin:0 6px;border-radius:7px;font-size:12px;font-weight:500;color:var(--text-dim);cursor:pointer;transition:all .15s;border:1px solid transparent}
+.sb-item:hover{background:var(--bg3);color:var(--text)}
+.sb-item.active{background:var(--neon-glow);color:var(--neon);border-color:var(--neon-dim)}
+.sb-item .ic{font-size:14px;width:18px;text-align:center}
+.sb-item .badge{margin-left:auto;padding:1px 7px;background:var(--neon-dim);color:var(--neon);border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700}
+.sb-div{height:1px;background:var(--border);margin:10px 14px}
+
+/* MAIN */
+.main{padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
+
+/* CONNECTED STATE */
+.dashboard{display:flex;flex-direction:column;gap:16px}
+
+/* ORDER PANEL */
+.order-row{display:grid;grid-template-columns:360px 1fr;gap:16px}
+
+/* NEW ORDER */
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.panel-hd{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid var(--border)}
+.panel-t{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;display:flex;align-items:center;gap:7px}
+.panel-t .d{width:5px;height:5px;background:var(--neon);border-radius:50%}
+.panel-bd{padding:18px}
+
+.input-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;display:block}
+
+.field{display:flex;align-items:center;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:7px;transition:border-color .2s;margin-bottom:14px}
+.field:focus-within{border-color:var(--neon-dim)}
+.field input{flex:1;background:none;border:none;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;width:100%}
+.field input::placeholder{color:var(--text-dim)}
+.field .suf{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);margin-left:6px;white-space:nowrap}
+
+/* TOKEN RESULT */
+.token-result{display:none;align-items:center;gap:8px;padding:9px 12px;background:var(--neon-glow);border:1px solid var(--neon-dim);border-radius:7px;margin-bottom:14px}
+.token-result.visible{display:flex}
+.tk-logo{width:26px;height:26px;background:var(--bg3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px}
+.tk-info{flex:1}
+.tk-name{font-weight:600;font-size:12px}
+.tk-price{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim)}
+.tk-status{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--neon)}
+
+/* ORDER TABS */
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-bottom:14px;padding:3px;background:var(--bg);border-radius:7px}
+.tab{padding:7px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;color:var(--text-dim);border-radius:5px;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.5px;border:none;background:none}
+.tab.active{background:var(--neon);color:var(--bg)}
+.tab:hover:not(.active){color:var(--text);background:var(--bg3)}
+
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+.qbtns{display:flex;gap:4px;margin:-8px 0 14px}
+.qb{padding:3px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-dim);cursor:pointer;transition:all .15s}
+.qb:hover{border-color:var(--neon-dim);color:var(--neon)}
+
+.summary{padding:12px;background:var(--bg);border-radius:7px;margin-bottom:14px}
+.sum-row{display:flex;justify-content:space-between;padding:5px 0;font-size:11px}
+.sum-row .l{color:var(--text-dim)}
+.sum-row .v{font-family:'JetBrains Mono',monospace;font-weight:600}
+
+.btn-exec{width:100%;padding:13px;background:var(--neon);color:var(--bg);border:none;border-radius:7px;font-family:'JetBrains Mono',monospace;font-weight:800;font-size:13px;cursor:pointer;text-transform:uppercase;letter-spacing:2px;box-shadow:0 0 18px var(--neon-dim);transition:all .2s}
+.btn-exec:hover{box-shadow:0 0 30px var(--neon-dim);transform:translateY(-1px)}
+.btn-exec:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;transform:none}
+
+/* ORDERS TABLE */
+.tbl-wrap{flex:1;overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{padding:10px 14px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border);background:var(--bg3);white-space:nowrap}
+tbody td{padding:12px 14px;font-size:12px;border-bottom:1px solid var(--border);white-space:nowrap}
+tbody tr:hover{background:var(--bg3)}
+.mono{font-family:'JetBrains Mono',monospace;font-size:11px}
+
+.type-b{padding:3px 8px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.type-b.buy{background:var(--neon-glow);color:var(--neon);border:1px solid var(--neon-dim)}
+.type-b.sell{background:var(--red-dim);color:var(--red);border:1px solid var(--red-dim)}
+.type-b.trail{background:var(--yellow-dim);color:var(--yellow);border:1px solid var(--yellow-dim)}
+.type-b.snipe{background:var(--blue-dim);color:var(--blue);border:1px solid var(--blue-dim)}
+
+.status{display:flex;align-items:center;gap:5px;font-size:11px}
+.status::before{content:'';width:5px;height:5px;border-radius:50%}
+.status.watching{color:var(--neon)}.status.watching::before{background:var(--neon);animation:pulse 2s infinite}
+.status.pending{color:var(--yellow)}.status.pending::before{background:var(--yellow)}
+
+.btn-x{padding:4px 10px;background:transparent;border:1px solid var(--border);border-radius:3px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:9px;cursor:pointer;transition:all .15s}
+.btn-x:hover{border-color:var(--red);color:var(--red)}
+
+/* EMPTY STATE */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;color:var(--text-dim)}
+.empty .e-icon{font-size:36px;opacity:.2;margin-bottom:12px}
+.empty h3{font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px}
+.empty p{font-size:12px;max-width:280px}
+
+/* BOTTOM */
+.bottom-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.perf-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px}
+.perf-stat{padding:14px;background:var(--bg);border-radius:7px;border:1px solid var(--border)}
+.perf-stat .l{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;font-family:'JetBrains Mono',monospace;margin-bottom:4px}
+.perf-stat .v{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:800}
+.perf-stat .v.g{color:var(--neon)}.perf-stat .v.r{color:var(--red)}.perf-stat .v.w{color:var(--text)}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* RESPONSIVE */
+@media(max-width:1100px){.order-row{grid-template-columns:1fr}.bottom-row{grid-template-columns:1fr}}
+@media(max-width:768px){.app{grid-template-columns:1fr}.sidebar{display:none}}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="logo"><div class="logo-icon">⊕</div>SniperFi</div>
+      <div class="net-badge"><span class="net-dot"></span>Solana Mainnet</div>
+    </div>
+    <div class="topbar-right">
+      <div class="bal" id="balDisplay" style="display:none"><span id="solBal">—</span> SOL</div>
+      <button class="wallet-btn" id="walletBtn" onclick="connectWallet()">Connect Wallet</button>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sb-label">Trading</div>
+    <div class="sb-item active"><span class="ic">⊕</span>New Order</div>
+    <div class="sb-item"><span class="ic">◎</span>Active Orders<span class="badge" id="orderCount">0</span></div>
+    <div class="sb-item"><span class="ic">⧫</span>Order History</div>
+    <div class="sb-div"></div>
+    <div class="sb-label">Account</div>
+    <div class="sb-item"><span class="ic">◐</span>Performance</div>
+    <div class="sb-item"><span class="ic">⚙</span>Settings</div>
+    <div class="sb-div"></div>
+    <a href="./docs.html" class="sb-item" style="text-decoration:none"><span class="ic">◇</span>Docs</a>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <div class="dashboard visible" id="dashboard">
+
+      <div class="order-row">
+
+        <!-- NEW ORDER FORM -->
+        <div class="panel">
+          <div class="panel-hd">
+            <div class="panel-t"><span class="d"></span>New Order</div>
+          </div>
+          <div class="panel-bd">
+
+            <label class="input-label">Token Address</label>
+            <div class="field">
+              <input type="text" id="tokenInput" placeholder="Paste pump.fun token address..." oninput="lookupToken()">
+            </div>
+            <div class="token-result" id="tokenResult">
+              <div class="tk-logo" id="tkEmoji">?</div>
+              <div class="tk-info">
+                <div class="tk-name" id="tkName">Loading...</div>
+                <div class="tk-price" id="tkPrice">—</div>
+              </div>
+              <div class="tk-status" id="tkStatus">DETECTED</div>
+            </div>
+
+            <label class="input-label">Order Type</label>
+            <div class="tabs">
+              <button class="tab active" onclick="setTab(this,'buy')">Limit Buy</button>
+              <button class="tab" onclick="setTab(this,'tp')">Take Profit</button>
+              <button class="tab" onclick="setTab(this,'sl')">Stop Loss</button>
+              <button class="tab" onclick="setTab(this,'trail')">Trail</button>
+            </div>
+
+            <div class="row2">
+              <div>
+                <label class="input-label" id="priceLabel">Target Price</label>
+                <div class="field">
+                  <input type="text" id="priceInput" placeholder="0.00">
+                  <span class="suf" id="priceSuf">SOL</span>
+                </div>
+                <div class="qbtns" id="priceQbtns">
+                  <button class="qb" onclick="qPrice(-10)">-10%</button>
+                  <button class="qb" onclick="qPrice(-20)">-20%</button>
+                  <button class="qb" onclick="qPrice(-30)">-30%</button>
+                  <button class="qb" onclick="qPrice(-50)">-50%</button>
+                </div>
+              </div>
+              <div>
+                <label class="input-label">Amount</label>
+                <div class="field">
+                  <input type="text" id="amountInput" placeholder="0.00">
+                  <span class="suf">SOL</span>
+                </div>
+                <div class="qbtns">
+                  <button class="qb" onclick="qAmt(0.5)">0.5</button>
+                  <button class="qb" onclick="qAmt(1)">1.0</button>
+                  <button class="qb" onclick="qAmt(2)">2.0</button>
+                  <button class="qb" onclick="qMax()">MAX</button>
+                </div>
+              </div>
+            </div>
+
+            <label class="input-label">Max Slippage</label>
+            <div class="field">
+              <input type="text" id="slipInput" value="5" placeholder="5">
+              <span class="suf">%</span>
+            </div>
+
+            <div class="summary" id="orderSummary" style="display:none">
+              <div class="sum-row"><span class="l">Order Type</span><span class="v" id="sumType" style="color:var(--neon)">—</span></div>
+              <div class="sum-row"><span class="l">Target Price</span><span class="v" id="sumPrice">—</span></div>
+              <div class="sum-row"><span class="l">Amount</span><span class="v" id="sumAmt">—</span></div>
+              <div class="sum-row"><span class="l">Fee</span><span class="v" style="color:var(--neon)">0.5%</span></div>
+            </div>
+
+            <button class="btn-exec" id="execBtn" disabled onclick="handleExec()">⊕ Connect Wallet to Place Order</button>
+          </div>
+        </div>
+
+        <!-- ACTIVE ORDERS -->
+        <div class="panel" style="display:flex;flex-direction:column">
+          <div class="panel-hd">
+            <div class="panel-t"><span class="d"></span>Active Orders</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim)" id="orderCountLabel">0 orders</div>
+          </div>
+          <div id="ordersContent" style="flex:1">
+            <div class="empty">
+              <div class="e-icon">⊕</div>
+              <h3>No active orders</h3>
+              <p>Set your first limit order on any Pump.fun token using the form.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM -->
+      <div class="bottom-row">
+
+        <!-- HISTORY -->
+        <div class="panel">
+          <div class="panel-hd">
+            <div class="panel-t"><span class="d"></span>Order History</div>
+          </div>
+          <div id="historyContent">
+            <div class="empty">
+              <div class="e-icon">⧫</div>
+              <h3>No history yet</h3>
+              <p>Filled orders will show up here.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- PERFORMANCE -->
+        <div class="panel">
+          <div class="panel-hd">
+            <div class="panel-t"><span class="d"></span>Performance</div>
+          </div>
+          <div class="perf-grid">
+            <div class="perf-stat"><div class="l">Total PnL</div><div class="v w">—</div></div>
+            <div class="perf-stat"><div class="l">Win Rate</div><div class="v w">—</div></div>
+            <div class="perf-stat"><div class="l">Orders Filled</div><div class="v w">0</div></div>
+            <div class="perf-stat"><div class="l">Active Orders</div><div class="v w" id="perfActive">0</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let walletAddress = null;
+let solBalance = 0;
+let currentTab = 'buy';
+let orders = [];
+
+// WALLET CONNECT
+async function connectWallet() {
+  const btn = document.getElementById('walletBtn');
+  let provider = null;
+
+  if (typeof window.solana !== 'undefined' && window.solana.isPhantom) {
+    provider = window.solana;
+  } else if (typeof window.solflare !== 'undefined') {
+    provider = window.solflare;
+  } else {
+    window.open('https://phantom.app/', '_blank');
+    return;
+  }
+
+  try {
+    const resp = await provider.connect();
+    walletAddress = resp.publicKey ? resp.publicKey.toString() : provider.publicKey.toString();
+    const short = walletAddress.slice(0, 4) + '...' + walletAddress.slice(-4);
+    btn.textContent = '◉ ' + short;
+    btn.classList.add('connected');
+    document.getElementById('balDisplay').style.display = 'block';
+    document.getElementById('execBtn').textContent = '⊕ Place Order';
+    updateSummary();
+    fetchBalance();
+  } catch (e) {
+    console.error('Connection failed:', e);
+  }
+}
+
+// HANDLE EXECUTE - connect first if needed
+function handleExec() {
+  if (!walletAddress) {
+    connectWallet();
+  } else {
+    placeOrder();
+  }
+}
+
+// FETCH SOL BALANCE
+async function fetchBalance() {
+  if (!walletAddress) return;
+  try {
+    // Uses public Solana RPC — replace with Helius in production
+    const res = await fetch('https://api.mainnet-beta.solana.com', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0', id: 1,
+        method: 'getBalance',
+        params: [walletAddress]
+      })
+    });
+    const data = await res.json();
+    if (data.result) {
+      solBalance = data.result.value / 1e9;
+      document.getElementById('solBal').textContent = solBalance.toFixed(4);
+    }
+  } catch (e) {
+    document.getElementById('solBal').textContent = '—';
+  }
+}
+
+// TOKEN LOOKUP
+async function lookupToken() {
+  const input = document.getElementById('tokenInput').value.trim();
+  const result = document.getElementById('tokenResult');
+
+  if (input.length < 32) {
+    result.classList.remove('visible');
+    updateSummary();
+    return;
+  }
+
+  // TODO: Replace with real token metadata lookup via Helius/Jupiter
+  // For now show detected state
+  result.classList.add('visible');
+  document.getElementById('tkEmoji').textContent = '◎';
+  document.getElementById('tkName').textContent = input.slice(0, 6) + '...' + input.slice(-4);
+  document.getElementById('tkPrice').textContent = 'Fetching price...';
+  document.getElementById('tkStatus').textContent = 'DETECTED';
+
+  // Try Jupiter price API
+  try {
+    const res = await fetch('https://price.jup.ag/v6/price?ids=' + input);
+    const data = await res.json();
+    if (data.data && data.data[input]) {
+      const p = data.data[input];
+      document.getElementById('tkName').textContent = p.mintSymbol || input.slice(0, 8);
+      document.getElementById('tkPrice').textContent = p.price ? (p.price + ' USD') : 'Price unavailable';
+    } else {
+      document.getElementById('tkPrice').textContent = 'Price not indexed yet';
+    }
+  } catch (e) {
+    document.getElementById('tkPrice').textContent = 'Price lookup failed';
+  }
+
+  updateSummary();
+}
+
+// TABS
+function setTab(el, type) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentTab = type;
+
+  const priceLabel = document.getElementById('priceLabel');
+  const priceSuf = document.getElementById('priceSuf');
+  const qbtns = document.getElementById('priceQbtns');
+
+  if (type === 'buy') {
+    priceLabel.textContent = 'Target Price';
+    priceSuf.textContent = 'SOL';
+    qbtns.innerHTML = '<button class="qb" onclick="qPrice(-10)">-10%</button><button class="qb" onclick="qPrice(-20)">-20%</button><button class="qb" onclick="qPrice(-30)">-30%</button><button class="qb" onclick="qPrice(-50)">-50%</button>';
+  } else if (type === 'tp') {
+    priceLabel.textContent = 'Take Profit At';
+    priceSuf.textContent = 'x';
+    qbtns.innerHTML = '<button class="qb" onclick="setPrice(2)">2x</button><button class="qb" onclick="setPrice(3)">3x</button><button class="qb" onclick="setPrice(5)">5x</button><button class="qb" onclick="setPrice(10)">10x</button>';
+  } else if (type === 'sl') {
+    priceLabel.textContent = 'Stop Loss At';
+    priceSuf.textContent = '%';
+    qbtns.innerHTML = '<button class="qb" onclick="setPrice(-15)">-15%</button><button class="qb" onclick="setPrice(-25)">-25%</button><button class="qb" onclick="setPrice(-40)">-40%</button><button class="qb" onclick="setPrice(-50)">-50%</button>';
+  } else if (type === 'trail') {
+    priceLabel.textContent = 'Trail Distance';
+    priceSuf.textContent = '%';
+    qbtns.innerHTML = '<button class="qb" onclick="setPrice(5)">5%</button><button class="qb" onclick="setPrice(10)">10%</button><button class="qb" onclick="setPrice(15)">15%</button><button class="qb" onclick="setPrice(20)">20%</button>';
+  }
+
+  document.getElementById('priceInput').value = '';
+  updateSummary();
+}
+
+function setPrice(v) { document.getElementById('priceInput').value = v; updateSummary(); }
+function qPrice(pct) { document.getElementById('priceInput').value = pct + '%'; updateSummary(); }
+function qAmt(v) { document.getElementById('amountInput').value = v; updateSummary(); }
+function qMax() { document.getElementById('amountInput').value = solBalance > 0.01 ? (solBalance - 0.01).toFixed(4) : '0'; updateSummary(); }
+
+// UPDATE SUMMARY
+function updateSummary() {
+  const token = document.getElementById('tokenInput').value.trim();
+  const price = document.getElementById('priceInput').value;
+  const amount = document.getElementById('amountInput').value;
+  const summary = document.getElementById('orderSummary');
+  const btn = document.getElementById('execBtn');
+
+  const typeNames = { buy: 'Limit Buy', tp: 'Take Profit', sl: 'Stop Loss', trail: 'Trailing Stop' };
+
+  if (token.length >= 32 && price && amount) {
+    summary.style.display = 'block';
+    document.getElementById('sumType').textContent = typeNames[currentTab];
+    document.getElementById('sumPrice').textContent = price + (currentTab === 'buy' ? ' SOL' : currentTab === 'tp' ? 'x entry' : '%');
+    document.getElementById('sumAmt').textContent = amount + ' SOL';
+    btn.disabled = false;
+    btn.textContent = walletAddress ? '⊕ Place Order' : '⊕ Connect Wallet & Place Order';
+  } else {
+    summary.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = walletAddress ? '⊕ Place Order' : '⊕ Connect Wallet to Place Order';
+  }
+}
+
+// Watch inputs
+document.getElementById('priceInput').addEventListener('input', updateSummary);
+document.getElementById('amountInput').addEventListener('input', updateSummary);
+
+// PLACE ORDER (store locally for now — backend integration later)
+function placeOrder() {
+  const token = document.getElementById('tokenInput').value.trim();
+  const price = document.getElementById('priceInput').value;
+  const amount = document.getElementById('amountInput').value;
+  const slip = document.getElementById('slipInput').value;
+  const typeNames = { buy: 'Limit Buy', tp: 'Take Profit', sl: 'Stop Loss', trail: 'Trailing Stop' };
+  const typeClass = { buy: 'buy', tp: 'sell', sl: 'sell', trail: 'trail' };
+
+  const order = {
+    id: Date.now(),
+    token: token.slice(0, 6) + '...' + token.slice(-4),
+    fullToken: token,
+    type: typeNames[currentTab],
+    typeClass: typeClass[currentTab],
+    price: price + (currentTab === 'buy' ? ' SOL' : currentTab === 'tp' ? 'x' : '%'),
+    amount: amount + ' SOL',
+    slippage: slip,
+    createdAt: new Date().toLocaleTimeString()
+  };
+
+  orders.push(order);
+  renderOrders();
+
+  // Reset form
+  document.getElementById('tokenInput').value = '';
+  document.getElementById('priceInput').value = '';
+  document.getElementById('amountInput').value = '';
+  document.getElementById('tokenResult').classList.remove('visible');
+  document.getElementById('orderSummary').style.display = 'none';
+  document.getElementById('execBtn').disabled = true;
+
+  // TODO: Send order to backend API
+  // fetch('/api/orders', { method: 'POST', body: JSON.stringify(order) })
+}
+
+function renderOrders() {
+  const container = document.getElementById('ordersContent');
+  const countLabel = document.getElementById('orderCountLabel');
+  const countBadge = document.getElementById('orderCount');
+  const perfActive = document.getElementById('perfActive');
+
+  countLabel.textContent = orders.length + ' order' + (orders.length !== 1 ? 's' : '');
+  countBadge.textContent = orders.length;
+  perfActive.textContent = orders.length;
+
+  if (orders.length === 0) {
+    container.innerHTML = '<div class="empty"><div class="e-icon">⊕</div><h3>No active orders</h3><p>Set your first limit order on any Pump.fun token using the form.</p></div>';
+    return;
+  }
+
+  let html = '<div class="tbl-wrap"><table><thead><tr><th>Token</th><th>Type</th><th>Target</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody>';
+  orders.forEach(o => {
+    html += '<tr>';
+    html += '<td class="mono">' + o.token + '</td>';
+    html += '<td><span class="type-b ' + o.typeClass + '">' + o.type + '</span></td>';
+    html += '<td class="mono">' + o.price + '</td>';
+    html += '<td class="mono">' + o.amount + '</td>';
+    html += '<td><span class="status watching">Watching</span></td>';
+    html += '<td><button class="btn-x" onclick="cancelOrder(' + o.id + ')">Cancel</button></td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+  container.innerHTML = html;
+}
+
+function cancelOrder(id) {
+  orders = orders.filter(o => o.id !== id);
+  renderOrders();
+  // TODO: Cancel on backend
+  // fetch('/api/orders/' + id, { method: 'DELETE' })
+}
+</script>
+
+</body>
+</html>

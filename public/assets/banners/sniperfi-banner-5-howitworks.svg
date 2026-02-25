@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="ng" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00cc6a"/><stop offset="100%" style="stop-color:#00ff88"/>
+    </linearGradient>
+    <filter id="g"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="g2"><feGaussianBlur stdDeviation="10" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <radialGradient id="sp" cx="50%" cy="30%" r="50%">
+      <stop offset="0%" style="stop-color:#00ff88;stop-opacity:0.05"/><stop offset="100%" style="stop-color:#00ff88;stop-opacity:0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#0a0a0f"/>
+  <rect width="1200" height="630" fill="url(#sp)"/>
+  <g opacity="0.03" stroke="#00ff88" stroke-width="0.5">
+    <line x1="0" y1="105" x2="1200" y2="105"/><line x1="0" y1="210" x2="1200" y2="210"/><line x1="0" y1="315" x2="1200" y2="315"/><line x1="0" y1="420" x2="1200" y2="420"/><line x1="0" y1="525" x2="1200" y2="525"/>
+  </g>
+
+  <!-- Header -->
+  <text x="600" y="75" font-family="monospace" font-weight="900" font-size="13" fill="#00ff88" text-anchor="middle" letter-spacing="6" opacity="0.5">HOW IT WORKS</text>
+  <text x="600" y="132" font-family="monospace" font-weight="900" font-size="54" fill="#ffffff" text-anchor="middle" letter-spacing="-1">From Zero to Sniping</text>
+  <text x="600" y="165" font-family="monospace" font-weight="900" font-size="54" fill="url(#ng)" text-anchor="middle" letter-spacing="-1" filter="url(#g)">in 30 Seconds.</text>
+
+  <!-- 4 Steps -->
+  <!-- Step 1 -->
+  <g transform="translate(65, 210)">
+    <rect x="0" y="0" width="255" height="195" rx="10" fill="#11111a" stroke="#1f1f32" stroke-width="1.5"/>
+    <!-- Number -->
+    <text x="215" y="48" font-family="monospace" font-weight="900" font-size="64" fill="#00ff88" opacity="0.06" text-anchor="end">01</text>
+    <!-- Icon circle -->
+    <rect x="24" y="24" width="44" height="44" rx="10" fill="#00ff8810" stroke="#00ff8835" stroke-width="1.5"/>
+    <text x="46" y="53" font-family="monospace" font-size="20" fill="#00ff88" text-anchor="middle">◎</text>
+    <text x="80" y="43" font-family="monospace" font-weight="800" font-size="17" fill="#00ff88">Connect</text>
+    <text x="80" y="60" font-family="monospace" font-weight="800" font-size="17" fill="#ffffff">Wallet</text>
+    <!-- Description -->
+    <text x="24" y="100" font-family="monospace" font-size="12" fill="#7a7a99">Phantom or Solflare.</text>
+    <text x="24" y="118" font-family="monospace" font-size="12" fill="#7a7a99">No email. No KYC.</text>
+    <text x="24" y="136" font-family="monospace" font-size="12" fill="#7a7a99">No account creation.</text>
+    <!-- Tag -->
+    <rect x="24" y="158" width="80" height="22" rx="4" fill="#00ff8810" stroke="#00ff8825" stroke-width="1"/>
+    <text x="64" y="173" font-family="monospace" font-size="9" fill="#00ff88" text-anchor="middle" letter-spacing="1">~2 CLICKS</text>
+  </g>
+
+  <!-- Arrow 1 -->
+  <g transform="translate(325, 300)" opacity="0.15">
+    <line x1="0" y1="0" x2="25" y2="0" stroke="#00ff88" stroke-width="2"/>
+    <polygon points="25,-4 33,0 25,4" fill="#00ff88"/>
+  </g>
+
+  <!-- Step 2 -->
+  <g transform="translate(340+25, 210)">
+    <rect x="0" y="0" width="255" height="195" rx="10" fill="#11111a" stroke="#1f1f32" stroke-width="1.5"/>
+    <text x="215" y="48" font-family="monospace" font-weight="900" font-size="64" fill="#00ff88" opacity="0.06" text-anchor="end">02</text>
+    <rect x="24" y="24" width="44" height="44" rx="10" fill="#00ff8810" stroke="#00ff8835" stroke-width="1.5"/>
+    <text x="46" y="52" font-family="monospace" font-size="18" fill="#00ff88" text-anchor="middle">⌘</text>
+    <text x="80" y="43" font-family="monospace" font-weight="800" font-size="17" fill="#00ff88">Paste</text>
+    <text x="80" y="60" font-family="monospace" font-weight="800" font-size="17" fill="#ffffff">Token</text>
+    <text x="24" y="100" font-family="monospace" font-size="12" fill="#7a7a99">Any Pump.fun or</text>
+    <text x="24" y="118" font-family="monospace" font-size="12" fill="#7a7a99">PumpSwap token.</text>
+    <text x="24" y="136" font-family="monospace" font-size="12" fill="#7a7a99">Live price fetched.</text>
+    <rect x="24" y="158" width="80" height="22" rx="4" fill="#00ff8810" stroke="#00ff8825" stroke-width="1"/>
+    <text x="64" y="173" font-family="monospace" font-size="9" fill="#00ff88" text-anchor="middle" letter-spacing="1">~1 SEC</text>
+  </g>
+
+  <!-- Arrow 2 -->
+  <g transform="translate(625, 300)" opacity="0.15">
+    <line x1="0" y1="0" x2="25" y2="0" stroke="#00ff88" stroke-width="2"/>
+    <polygon points="25,-4 33,0 25,4" fill="#00ff88"/>
+  </g>
+
+  <!-- Step 3 -->
+  <g transform="translate(640+25, 210)">
+    <rect x="0" y="0" width="255" height="195" rx="10" fill="#11111a" stroke="#1f1f32" stroke-width="1.5"/>
+    <text x="215" y="48" font-family="monospace" font-weight="900" font-size="64" fill="#00ff88" opacity="0.06" text-anchor="end">03</text>
+    <rect x="24" y="24" width="44" height="44" rx="10" fill="#00ff8810" stroke="#00ff8835" stroke-width="1.5"/>
+    <text x="46" y="53" font-family="monospace" font-size="20" fill="#00ff88" text-anchor="middle">⊕</text>
+    <text x="80" y="43" font-family="monospace" font-weight="800" font-size="17" fill="#00ff88">Set</text>
+    <text x="80" y="60" font-family="monospace" font-weight="800" font-size="17" fill="#ffffff">Order</text>
+    <text x="24" y="100" font-family="monospace" font-size="12" fill="#7a7a99">Pick type, price,</text>
+    <text x="24" y="118" font-family="monospace" font-size="12" fill="#7a7a99">amount, slippage.</text>
+    <text x="24" y="136" font-family="monospace" font-size="12" fill="#7a7a99">Review & confirm.</text>
+    <rect x="24" y="158" width="80" height="22" rx="4" fill="#00ff8810" stroke="#00ff8825" stroke-width="1"/>
+    <text x="64" y="173" font-family="monospace" font-size="9" fill="#00ff88" text-anchor="middle" letter-spacing="1">~10 SEC</text>
+  </g>
+
+  <!-- Arrow 3 -->
+  <g transform="translate(925, 300)" opacity="0.15">
+    <line x1="0" y1="0" x2="25" y2="0" stroke="#00ff88" stroke-width="2"/>
+    <polygon points="25,-4 33,0 25,4" fill="#00ff88"/>
+  </g>
+
+  <!-- Step 4 -->
+  <g transform="translate(940+25, 210)">
+    <rect x="0" y="0" width="185" height="195" rx="10" fill="#00ff8808" stroke="#00ff8830" stroke-width="1.5"/>
+    <text x="150" y="48" font-family="monospace" font-weight="900" font-size="64" fill="#00ff88" opacity="0.08" text-anchor="end">04</text>
+    <rect x="24" y="24" width="44" height="44" rx="10" fill="#00ff8818" stroke="#00ff8850" stroke-width="1.5"/>
+    <text x="46" y="53" font-family="monospace" font-size="20" fill="#00ff88" text-anchor="middle">✓</text>
+    <text x="80" y="43" font-family="monospace" font-weight="800" font-size="17" fill="#00ff88">Done.</text>
+    <text x="80" y="60" font-family="monospace" font-weight="800" font-size="17" fill="#00ff88">Sleep.</text>
+    <text x="24" y="100" font-family="monospace" font-size="12" fill="#7a7a99">We monitor 24/7.</text>
+    <text x="24" y="118" font-family="monospace" font-size="12" fill="#7a7a99">Target hit →</text>
+    <text x="24" y="136" font-family="monospace" font-size="12" fill="#00ff88">auto-execute.</text>
+    <rect x="24" y="158" width="80" height="22" rx="4" fill="#00ff8818" stroke="#00ff8840" stroke-width="1"/>
+    <text x="64" y="173" font-family="monospace" font-size="9" fill="#00ff88" text-anchor="middle" letter-spacing="1">24/7</text>
+  </g>
+
+  <!-- Stats bar -->
+  <line x1="65" y1="440" x2="1145" y2="440" stroke="#1f1f32" stroke-width="1"/>
+  
+  <g transform="translate(65, 470)">
+    <!-- Stat 1 -->
+    <text x="0" y="0" font-family="monospace" font-size="10" fill="#7a7a99" letter-spacing="1">PLATFORM FEE</text>
+    <text x="0" y="28" font-family="monospace" font-weight="900" font-size="32" fill="url(#ng)" filter="url(#g)">$0</text>
+    <text x="60" y="28" font-family="monospace" font-size="12" fill="#7a7a99">until fill</text>
+    <!-- Stat 2 -->
+    <text x="280" y="0" font-family="monospace" font-size="10" fill="#7a7a99" letter-spacing="1">EXECUTION</text>
+    <text x="280" y="28" font-family="monospace" font-weight="900" font-size="32" fill="url(#ng)" filter="url(#g)">&lt;1s</text>
+    <!-- Stat 3 -->
+    <text x="480" y="0" font-family="monospace" font-size="10" fill="#7a7a99" letter-spacing="1">FEE PER FILL</text>
+    <text x="480" y="28" font-family="monospace" font-weight="900" font-size="32" fill="url(#ng)" filter="url(#g)">0.5%</text>
+    <!-- Stat 4 -->
+    <text x="700" y="0" font-family="monospace" font-size="10" fill="#7a7a99" letter-spacing="1">MONITORING</text>
+    <text x="700" y="28" font-family="monospace" font-weight="900" font-size="32" fill="url(#ng)" filter="url(#g)">24/7</text>
+    <!-- Stat 5 -->
+    <text x="920" y="0" font-family="monospace" font-size="10" fill="#7a7a99" letter-spacing="1">CUSTODY</text>
+    <text x="920" y="28" font-family="monospace" font-weight="900" font-size="28" fill="url(#ng)" filter="url(#g)">YOUR KEYS</text>
+  </g>
+
+  <!-- CTA -->
+  <rect x="445" y="540" width="310" height="50" rx="8" fill="#00ff88" filter="url(#g)"/>
+  <text x="600" y="571" font-family="monospace" font-weight="800" font-size="16" fill="#0a0a0f" text-anchor="middle" letter-spacing="3">START SNIPING NOW</text>
+
+  <!-- Logo bottom corners -->
+  <rect x="65" y="575" width="22" height="22" rx="4" fill="none" stroke="#00ff88" stroke-width="1.5" opacity="0.4"/>
+  <text x="76" y="591" font-family="monospace" font-size="9" fill="#00ff88" opacity="0.4" text-anchor="middle">⊕</text>
+  <text x="95" y="591" font-family="monospace" font-weight="800" font-size="13" fill="#00ff88" opacity="0.4">SniperFi</text>
+  <text x="1100" y="591" font-family="monospace" font-size="11" fill="#7a7a99" opacity="0.3" text-anchor="end">@UseSniperFi</text>
+
+  <rect x="0" y="0" width="1200" height="2" fill="#00ff88" opacity="0.12"/>
+  <rect x="0" y="628" width="1200" height="2" fill="#00ff88" opacity="0.12"/>
+</svg>

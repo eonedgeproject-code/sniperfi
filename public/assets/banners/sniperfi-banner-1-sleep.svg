@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="ng" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00cc6a"/><stop offset="100%" style="stop-color:#00ff88"/>
+    </linearGradient>
+    <filter id="g"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="g2"><feGaussianBlur stdDeviation="12" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <radialGradient id="sp" cx="50%" cy="45%" r="50%">
+      <stop offset="0%" style="stop-color:#00ff88;stop-opacity:0.07"/><stop offset="100%" style="stop-color:#00ff88;stop-opacity:0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#0a0a0f"/>
+  <rect width="1200" height="630" fill="url(#sp)"/>
+  <!-- Grid -->
+  <g opacity="0.04" stroke="#00ff88" stroke-width="0.5">
+    <line x1="0" y1="105" x2="1200" y2="105"/><line x1="0" y1="210" x2="1200" y2="210"/><line x1="0" y1="315" x2="1200" y2="315"/><line x1="0" y1="420" x2="1200" y2="420"/><line x1="0" y1="525" x2="1200" y2="525"/>
+    <line x1="200" y1="0" x2="200" y2="630"/><line x1="400" y1="0" x2="400" y2="630"/><line x1="600" y1="0" x2="600" y2="630"/><line x1="800" y1="0" x2="800" y2="630"/><line x1="1000" y1="0" x2="1000" y2="630"/>
+  </g>
+  <!-- Scope watermark -->
+  <circle cx="900" cy="320" r="220" fill="none" stroke="#00ff88" stroke-width="2" opacity="0.04"/>
+  <circle cx="900" cy="320" r="140" fill="none" stroke="#00ff88" stroke-width="1.5" opacity="0.03"/>
+  <g stroke="#00ff88" stroke-width="1.5" opacity="0.04">
+    <line x1="900" y1="60" x2="900" y2="580"/><line x1="640" y1="320" x2="1160" y2="320"/>
+  </g>
+  <!-- Moon icon -->
+  <g transform="translate(100, 140)" filter="url(#g2)" opacity="0.12">
+    <circle cx="40" cy="40" r="35" fill="none" stroke="#00ff88" stroke-width="2"/>
+    <path d="M55,20 A25,25 0 1,0 55,60 A18,18 0 1,1 55,20" fill="#00ff88" opacity="0.3"/>
+  </g>
+  <!-- Badge -->
+  <rect x="100" y="130" width="180" height="30" rx="15" fill="none" stroke="#00ff88" stroke-width="1" opacity="0.4"/>
+  <circle cx="118" cy="145" r="3" fill="#00ff88" opacity="0.8"/>
+  <text x="130" y="150" font-family="monospace" font-size="11" fill="#00ff88" opacity="0.7" letter-spacing="2">BUILT ON SOLANA</text>
+  <!-- Main text -->
+  <text x="100" y="235" font-family="monospace" font-weight="900" font-size="68" fill="#ffffff" letter-spacing="-1">Sleep While</text>
+  <text x="100" y="310" font-family="monospace" font-weight="900" font-size="68" fill="url(#ng)" filter="url(#g)" letter-spacing="-1">Your Orders</text>
+  <text x="100" y="385" font-family="monospace" font-weight="900" font-size="68" fill="url(#ng)" filter="url(#g)" letter-spacing="-1">Execute.</text>
+  <!-- Sub -->
+  <text x="100" y="430" font-family="monospace" font-size="18" fill="#7a7a99" letter-spacing="1">Set limit buys, take profits & stop losses on Pump.fun tokens.</text>
+  <text x="100" y="455" font-family="monospace" font-size="18" fill="#7a7a99" letter-spacing="1">24/7 automated. Non-custodial. Powered by Jupiter.</text>
+  <!-- CTA -->
+  <rect x="100" y="490" width="220" height="50" rx="8" fill="#00ff88" filter="url(#g)"/>
+  <text x="210" y="522" font-family="monospace" font-weight="800" font-size="16" fill="#0a0a0f" text-anchor="middle" letter-spacing="3">LAUNCH APP</text>
+  <rect x="340" y="490" width="200" height="50" rx="8" fill="none" stroke="#333" stroke-width="1.5"/>
+  <text x="440" y="522" font-family="monospace" font-weight="600" font-size="16" fill="#7a7a99" text-anchor="middle" letter-spacing="2">LEARN MORE</text>
+  <!-- Logo bottom -->
+  <rect x="100" y="575" width="28" height="28" rx="5" fill="none" stroke="#00ff88" stroke-width="2" opacity="0.6"/>
+  <text x="114" y="595" font-family="monospace" font-size="12" fill="#00ff88" opacity="0.6" text-anchor="middle">⊕</text>
+  <text x="140" y="595" font-family="monospace" font-weight="800" font-size="16" fill="#00ff88" opacity="0.6" letter-spacing="1">SniperFi</text>
+  <text x="1100" y="595" font-family="monospace" font-size="11" fill="#7a7a99" opacity="0.3" text-anchor="end">@UseSniperFi</text>
+  <!-- Border accents -->
+  <rect x="0" y="0" width="1200" height="2" fill="#00ff88" opacity="0.12"/>
+  <rect x="0" y="628" width="1200" height="2" fill="#00ff88" opacity="0.12"/>
+</svg>

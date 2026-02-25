@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SniperFi — Limit Orders for Pump.fun & PumpSwap</title>
+<meta name="description" content="Set limit orders, take profits & stop losses on Pump.fun and PumpSwap tokens. Precision trading on Solana.">
+<link rel="icon" type="image/svg+xml" href="./assets/icons/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --neon:#00ff88;--neon-dim:#00ff8840;--neon-glow:#00ff8818;
+  --red:#ff3355;--bg:#0a0a0f;--bg2:#11111a;--bg3:#181824;
+  --text:#e8e8f0;--text-dim:#7a7a99;--border:#1f1f32;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;line-height:1.6}
+
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.12;pointer-events:none;z-index:0}
+.scanline{position:fixed;inset:0;pointer-events:none;z-index:999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);opacity:.5}
+#particles{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 40px;display:flex;justify-content:space-between;align-items:center;background:rgba(10,10,15,.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transform:translateY(-100%);animation:navSlide .6s ease .2s forwards}
+@keyframes navSlide{to{transform:translateY(0)}}
+.logo{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:20px;color:var(--neon);text-shadow:0 0 18px var(--neon-dim);display:flex;align-items:center;gap:9px}
+.logo-icon{width:30px;height:30px;border:2px solid var(--neon);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 0 12px var(--neon-dim);animation:logoPulse 3s ease-in-out infinite}
+@keyframes logoPulse{0%,100%{box-shadow:0 0 12px var(--neon-dim)}50%{box-shadow:0 0 24px var(--neon-dim),0 0 48px var(--neon-glow)}}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{color:var(--text-dim);text-decoration:none;font-size:13px;font-weight:500;transition:color .3s;font-family:'JetBrains Mono',monospace}
+.nav-links a:hover{color:var(--neon)}
+.btn-wallet{padding:10px 22px;background:var(--neon);color:var(--bg);border:none;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1px;box-shadow:0 0 22px var(--neon-dim);transition:all .3s;text-decoration:none;position:relative;overflow:hidden}
+.btn-wallet::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(45deg,transparent 30%,rgba(255,255,255,.15) 50%,transparent 70%);animation:btnSheen 4s ease infinite}
+@keyframes btnSheen{0%,100%{transform:translateX(-100%) rotate(45deg)}50%{transform:translateX(100%) rotate(45deg)}}
+.btn-wallet:hover{box-shadow:0 0 40px var(--neon-dim);transform:translateY(-2px)}
+
+.hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 20px 80px;z-index:1}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border:1px solid var(--neon-dim);border-radius:100px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--neon);margin-bottom:28px;background:var(--neon-glow);opacity:0;transform:translateY(20px);animation:fadeUp .7s ease .4s forwards}
+.hero-badge .dot{width:6px;height:6px;background:var(--neon);border-radius:50%;animation:blink 1.5s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+.hero h1{font-size:clamp(44px,7.5vw,88px);font-weight:900;line-height:1.05;margin-bottom:22px;letter-spacing:-2px;opacity:0;transform:translateY(30px);animation:fadeUp .8s ease .6s forwards}
+.hero h1 .hl{color:var(--neon);text-shadow:0 0 35px var(--neon-dim),0 0 70px var(--neon-glow);animation:neonFlicker 4s ease-in-out infinite}
+@keyframes neonFlicker{0%,100%{text-shadow:0 0 35px var(--neon-dim),0 0 70px var(--neon-glow)}5%{text-shadow:0 0 5px var(--neon-dim)}10%{text-shadow:0 0 35px var(--neon-dim),0 0 70px var(--neon-glow)}15%{text-shadow:0 0 15px var(--neon-dim)}20%,90%{text-shadow:0 0 35px var(--neon-dim),0 0 70px var(--neon-glow)}}
+.hero-sub{font-size:clamp(15px,2.2vw,20px);color:var(--text-dim);max-width:580px;margin-bottom:40px;font-weight:300;line-height:1.7;opacity:0;transform:translateY(30px);animation:fadeUp .8s ease .8s forwards}
+.hero-sub strong{color:var(--text);font-weight:600}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;opacity:0;transform:translateY(30px);animation:fadeUp .8s ease 1s forwards}
+.btn-main{padding:16px 44px;background:var(--neon);color:var(--bg);border:none;border-radius:8px;font-weight:800;font-size:15px;cursor:pointer;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:2px;box-shadow:0 0 28px var(--neon-dim);transition:all .3s;text-decoration:none;position:relative;overflow:hidden}
+.btn-main::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(45deg,transparent 30%,rgba(255,255,255,.12) 50%,transparent 70%);animation:btnSheen 3s ease infinite}
+.btn-main:hover{box-shadow:0 0 50px var(--neon-dim);transform:translateY(-3px) scale(1.02)}
+.btn-ghost{padding:16px 44px;background:transparent;color:var(--text);border:1px solid var(--border);border-radius:8px;font-weight:600;font-size:15px;cursor:pointer;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:2px;transition:all .3s;text-decoration:none}
+.btn-ghost:hover{border-color:var(--neon);color:var(--neon);box-shadow:0 0 20px var(--neon-glow)}
+.hero-note{margin-top:32px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);display:flex;align-items:center;gap:8px;opacity:0;animation:fadeUp .8s ease 1.2s forwards}
+.hero-note span{color:var(--neon)}
+
+.glow{position:absolute;border-radius:50%;background:radial-gradient(circle,var(--neon-glow),transparent 70%);pointer-events:none;z-index:0}
+.glow.tr{width:600px;height:600px;top:-250px;right:-250px;animation:glowFloat 8s ease-in-out infinite}
+.glow.bl{width:400px;height:400px;bottom:-150px;left:-150px;animation:glowFloat 10s ease-in-out infinite reverse;opacity:.5}
+@keyframes glowFloat{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(20px,-20px) scale(1.05)}50%{transform:translate(-10px,15px) scale(.95)}75%{transform:translate(15px,10px) scale(1.03)}}
+
+.crosshair{position:absolute;width:200px;height:200px;pointer-events:none;z-index:0;opacity:0;animation:fadeUp 1s ease 1.5s forwards}
+.crosshair::before,.crosshair::after{content:'';position:absolute;background:var(--neon);opacity:.08}
+.crosshair::before{width:1px;height:100%;left:50%;animation:chV 4s ease-in-out infinite}
+.crosshair::after{height:1px;width:100%;top:50%;animation:chH 4s ease-in-out infinite}
+@keyframes chV{0%,100%{height:100%;opacity:.08}50%{height:60%;opacity:.15}}
+@keyframes chH{0%,100%{width:100%;opacity:.08}50%{width:60%;opacity:.15}}
+.crosshair .ring{position:absolute;inset:30%;border:1px solid var(--neon);border-radius:50%;opacity:.1;animation:chRing 6s ease-in-out infinite}
+@keyframes chRing{0%,100%{transform:scale(1);opacity:.1}50%{transform:scale(1.3);opacity:.05}}
+
+.reveal{opacity:0;transform:translateY(40px);transition:all .8s cubic-bezier(.16,1,.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-left{opacity:0;transform:translateX(-40px);transition:all .8s cubic-bezier(.16,1,.3,1)}
+.reveal-left.visible{opacity:1;transform:translateX(0)}
+.stagger .reveal-child{opacity:0;transform:translateY(30px);transition:all .6s cubic-bezier(.16,1,.3,1)}
+.stagger.visible .reveal-child{opacity:1;transform:translateY(0)}
+.stagger.visible .reveal-child:nth-child(1){transition-delay:.05s}
+.stagger.visible .reveal-child:nth-child(2){transition-delay:.12s}
+.stagger.visible .reveal-child:nth-child(3){transition-delay:.19s}
+.stagger.visible .reveal-child:nth-child(4){transition-delay:.26s}
+.stagger.visible .reveal-child:nth-child(5){transition-delay:.33s}
+.stagger.visible .reveal-child:nth-child(6){transition-delay:.40s}
+
+.problem{position:relative;z-index:1;padding:100px 20px;border-top:1px solid var(--border);background:var(--bg2)}
+.problem-inner{max-width:900px;margin:0 auto;text-align:center}
+.problem-inner h2{font-size:clamp(28px,4vw,44px);font-weight:800;margin-bottom:16px;letter-spacing:-1px}
+.problem-inner>p{color:var(--text-dim);font-size:17px;max-width:650px;margin:0 auto 48px;line-height:1.8}
+.pain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;text-align:left}
+.pain-card{padding:28px;background:var(--bg);border:1px solid var(--border);border-radius:10px;transition:all .4s;position:relative;overflow:hidden}
+.pain-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--neon-glow),transparent);opacity:0;transition:opacity .4s}
+.pain-card:hover{transform:translateY(-4px);border-color:var(--neon-dim)}
+.pain-card:hover::before{opacity:1}
+.pain-card .icon{font-size:24px;margin-bottom:14px;position:relative}
+.pain-card h3{font-size:16px;font-weight:700;margin-bottom:8px;position:relative}
+.pain-card p{color:var(--text-dim);font-size:13px;line-height:1.6;position:relative}
+
+.features{position:relative;z-index:1;padding:100px 20px;max-width:1100px;margin:0 auto}
+.tag{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--neon);text-transform:uppercase;letter-spacing:4px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.tag::before{content:'';width:0;height:1px;background:var(--neon);transition:width .8s ease}
+.tag.anim::before{width:28px}
+.stitle{font-size:clamp(28px,4vw,46px);font-weight:800;margin-bottom:56px;letter-spacing:-1px;max-width:550px}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.feat{padding:32px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;transition:all .35s;position:relative;overflow:hidden}
+.feat::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--neon),transparent);opacity:0;transition:opacity .35s}
+.feat::before{content:'';position:absolute;bottom:-50%;right:-50%;width:100%;height:100%;background:radial-gradient(circle,var(--neon-glow),transparent 70%);opacity:0;transition:opacity .5s}
+.feat:hover{border-color:var(--neon-dim);transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,.3)}
+.feat:hover::after{opacity:1}
+.feat:hover::before{opacity:1}
+.feat-icon{width:44px;height:44px;border:1px solid var(--neon-dim);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:18px;background:var(--neon-glow);transition:all .35s}
+.feat:hover .feat-icon{transform:scale(1.1);box-shadow:0 0 16px var(--neon-dim)}
+.feat h3{font-size:17px;font-weight:700;margin-bottom:8px}
+.feat p{color:var(--text-dim);font-size:13px;line-height:1.7}
+
+.how{position:relative;z-index:1;padding:100px 20px;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.how-inner{max-width:1100px;margin:0 auto}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:56px}
+.step{position:relative;padding:28px;background:var(--bg);border:1px solid var(--border);border-radius:10px;transition:all .4s}
+.step:hover{border-color:var(--neon-dim);transform:translateY(-4px)}
+.step-n{font-family:'JetBrains Mono',monospace;font-size:56px;font-weight:800;color:var(--neon);opacity:.12;position:absolute;top:12px;right:20px;line-height:1;transition:opacity .4s}
+.step:hover .step-n{opacity:.25}
+.step h3{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;margin-bottom:8px;color:var(--neon)}
+.step p{color:var(--text-dim);font-size:13px;line-height:1.6}
+
+.terminal-section{position:relative;z-index:1;padding:80px 20px;max-width:700px;margin:0 auto}
+.terminal{background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.terminal-bar{display:flex;align-items:center;gap:7px;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--bg3)}
+.terminal-dot{width:10px;height:10px;border-radius:50%;border:1px solid var(--border)}
+.terminal-dot.r{background:#ff5f57;border-color:#e0443e}.terminal-dot.y{background:#febc2e;border-color:#dea123}.terminal-dot.g{background:#28c840;border-color:#1aab29}
+.terminal-title{flex:1;text-align:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim)}
+.terminal-body{padding:20px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2;min-height:200px}
+.terminal-body .line{opacity:0;transform:translateX(-10px);transition:all .4s ease}
+.terminal-body .line.typed{opacity:1;transform:translateX(0)}
+.t-dim{color:var(--text-dim)}.t-neon{color:var(--neon)}.t-red{color:var(--red)}.t-white{color:var(--text)}.t-yellow{color:#ffaa00}
+
+.stack{position:relative;z-index:1;padding:100px 20px;max-width:900px;margin:0 auto;text-align:center}
+.stack h2{font-size:clamp(28px,4vw,44px);font-weight:800;margin-bottom:16px}
+.stack>p{color:var(--text-dim);font-size:16px;margin-bottom:48px}
+.stack-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stack-item{padding:24px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;transition:all .4s}
+.stack-item:hover{border-color:var(--neon-dim);transform:translateY(-3px)}
+.stack-item .s-icon{font-size:28px;margin-bottom:10px;transition:transform .4s}
+.stack-item:hover .s-icon{transform:scale(1.2)}
+.stack-item h4{font-size:13px;font-weight:700;margin-bottom:4px}
+.stack-item p{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim)}
+
+.cta{position:relative;z-index:1;padding:120px 20px;text-align:center;border-top:1px solid var(--border);overflow:hidden}
+.cta::before{content:'';position:absolute;top:50%;left:50%;width:600px;height:600px;transform:translate(-50%,-50%);background:radial-gradient(circle,var(--neon-glow),transparent 70%);pointer-events:none;animation:ctaGlow 5s ease-in-out infinite}
+@keyframes ctaGlow{0%,100%{opacity:.5;transform:translate(-50%,-50%) scale(1)}50%{opacity:.8;transform:translate(-50%,-50%) scale(1.1)}}
+.cta h2{font-size:clamp(32px,5vw,56px);font-weight:900;margin-bottom:18px;letter-spacing:-1px;position:relative}
+.cta p{color:var(--text-dim);font-size:17px;margin-bottom:36px;max-width:480px;margin-left:auto;margin-right:auto;position:relative}
+.cta .btn-main{position:relative}
+
+footer{position:relative;z-index:1;padding:36px 40px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim)}
+footer a{color:var(--text-dim);text-decoration:none;transition:color .3s}
+footer a:hover{color:var(--neon)}
+.flinks{display:flex;gap:22px}
+
+@media(max-width:900px){
+  .feat-grid,.pain-grid{grid-template-columns:1fr}
+  .steps{grid-template-columns:repeat(2,1fr)}
+  .stack-grid{grid-template-columns:repeat(2,1fr)}
+  nav{padding:14px 20px}
+  .nav-links a:not(.btn-wallet){display:none}
+}
+@media(max-width:600px){
+  .steps{grid-template-columns:1fr}
+  .hero-actions{flex-direction:column;width:100%;max-width:320px}
+  .btn-main,.btn-ghost{width:100%;text-align:center}
+}
+@media(prefers-reduced-motion:reduce){
+  *,.hero-badge,.hero h1,.hero-sub,.hero-actions,.hero-note,nav,.reveal,.reveal-left,.stagger .reveal-child{animation:none!important;transition:none!important;opacity:1!important;transform:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<div class="scanline"></div>
+<canvas id="particles"></canvas>
+
+<nav>
+  <div class="logo"><div class="logo-icon">⊕</div>SniperFi</div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how">How It Works</a>
+    <a href="https://x.com/UseSniperFi" target="_blank">Twitter</a>
+    <a href="./docs.html">Docs</a>
+    <a href="./app.html" class="btn-wallet">Launch App</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="glow tr"></div>
+  <div class="glow bl"></div>
+  <div class="crosshair" style="top:15%;left:10%"><div class="ring"></div></div>
+  <div class="crosshair" style="bottom:20%;right:8%"><div class="ring"></div></div>
+  <div class="hero-badge"><span class="dot"></span>BUILT ON SOLANA</div>
+  <h1>Limit Orders for<br><span class="hl">Pump.fun</span></h1>
+  <p class="hero-sub">
+    Set <strong>limit buys, take profits & stop losses</strong> on any Pump.fun or PumpSwap token. Your orders execute 24/7 — even while you sleep.
+  </p>
+  <div class="hero-actions">
+    <a href="./app.html" class="btn-main">Launch App</a>
+    <a href="#how" class="btn-ghost">Learn More</a>
+  </div>
+  <div class="hero-note"><span>⚡</span> Powered by Jupiter. Non-custodial. Your keys, your SOL.</div>
+</section>
+
+<section class="problem">
+  <div class="problem-inner">
+    <div class="reveal">
+      <h2>Trading on Pump.fun is Broken</h2>
+      <p>Millions of tokens. Zero order tools. You're stuck staring at charts hoping to catch the right price.</p>
+    </div>
+    <div class="pain-grid stagger">
+      <div class="pain-card reveal-child">
+        <div class="icon">👀</div>
+        <h3>24/7 Chart Watching</h3>
+        <p>You can't set a buy at your target price. You either market buy now or miss it entirely.</p>
+      </div>
+      <div class="pain-card reveal-child">
+        <div class="icon">📉</div>
+        <h3>No Stop Losses</h3>
+        <p>Token dumps 80% while you sleep. No way to auto-sell. You wake up holding bags.</p>
+      </div>
+      <div class="pain-card reveal-child">
+        <div class="icon">💸</div>
+        <h3>Missed Take Profits</h3>
+        <p>Token pumps 10x at 3AM. By the time you check, it's already back to 2x. Profits gone.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="tag reveal-left">Features</div>
+  <h2 class="stitle reveal">Every Order Type You Need</h2>
+  <div class="feat-grid stagger">
+    <div class="feat reveal-child">
+      <div class="feat-icon">🎯</div>
+      <h3>Limit Buy</h3>
+      <p>Set your entry price. When the token drops to your target, we buy automatically via Jupiter.</p>
+    </div>
+    <div class="feat reveal-child">
+      <div class="feat-icon">📈</div>
+      <h3>Take Profit</h3>
+      <p>Set a sell target at 2x, 5x, or any multiplier. We sell the moment it hits.</p>
+    </div>
+    <div class="feat reveal-child">
+      <div class="feat-icon">🛡️</div>
+      <h3>Stop Loss</h3>
+      <p>Set a floor. If the token drops below your threshold, we auto-sell to protect your capital.</p>
+    </div>
+    <div class="feat reveal-child">
+      <div class="feat-icon">📉</div>
+      <h3>Trailing Stop</h3>
+      <p>Follows price up, sells when it drops a set percentage from peak. Ride pumps, exit dumps.</p>
+    </div>
+    <div class="feat reveal-child">
+      <div class="feat-icon">🚀</div>
+      <h3>Graduation Snipe</h3>
+      <p>Auto-buy the moment a token graduates from bonding curve to PumpSwap at your max price.</p>
+    </div>
+    <div class="feat reveal-child">
+      <div class="feat-icon">⚡</div>
+      <h3>Jupiter Execution</h3>
+      <p>All swaps routed through Jupiter for best price and lowest slippage. MEV-protected.</p>
+    </div>
+  </div>
+</section>
+
+<section class="how" id="how">
+  <div class="how-inner">
+    <div class="tag reveal-left">How It Works</div>
+    <h2 class="stitle reveal">4 Steps. No Sign-up.</h2>
+    <div class="steps stagger">
+      <div class="step reveal-child">
+        <div class="step-n">01</div>
+        <h3>Connect Wallet</h3>
+        <p>Phantom or Solflare. No email. No KYC. No account creation.</p>
+      </div>
+      <div class="step reveal-child">
+        <div class="step-n">02</div>
+        <h3>Paste Token</h3>
+        <p>Paste any Pump.fun or PumpSwap token address. We fetch price data instantly.</p>
+      </div>
+      <div class="step reveal-child">
+        <div class="step-n">03</div>
+        <h3>Set Your Order</h3>
+        <p>Pick order type, target price, amount, slippage. Review and confirm.</p>
+      </div>
+      <div class="step reveal-child">
+        <div class="step-n">04</div>
+        <h3>We Handle The Rest</h3>
+        <p>SniperFi monitors 24/7. When target hits, we execute via Jupiter.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="terminal-section reveal">
+  <div class="terminal">
+    <div class="terminal-bar">
+      <span class="terminal-dot r"></span>
+      <span class="terminal-dot y"></span>
+      <span class="terminal-dot g"></span>
+      <span class="terminal-title">sniperfi — order engine</span>
+    </div>
+    <div class="terminal-body" id="termBody">
+      <div class="line"><span class="t-dim">[00:12:44]</span> <span class="t-neon">● engine</span> <span class="t-white">monitoring 3 active orders...</span></div>
+      <div class="line"><span class="t-dim">[00:12:45]</span> <span class="t-neon">● price</span> <span class="t-white">$DOGE420</span> <span class="t-dim">0.000847 SOL → 0.000312 SOL</span></div>
+      <div class="line"><span class="t-dim">[00:12:45]</span> <span class="t-yellow">◎ match</span> <span class="t-white">Limit Buy triggered @ 0.000350 SOL</span></div>
+      <div class="line"><span class="t-dim">[00:12:46]</span> <span class="t-neon">● jupiter</span> <span class="t-white">fetching best route... 3 paths found</span></div>
+      <div class="line"><span class="t-dim">[00:12:46]</span> <span class="t-neon">● swap</span> <span class="t-white">executing 1.5 SOL → 4,285 $DOGE420</span></div>
+      <div class="line"><span class="t-dim">[00:12:47]</span> <span class="t-neon">✓ filled</span> <span class="t-white">tx:</span> <span class="t-neon">5KxR...mN2p</span> <span class="t-dim">confirmed slot 298441022</span></div>
+      <div class="line"><span class="t-dim">[00:12:47]</span> <span class="t-dim">───────────────────────────────────────</span></div>
+      <div class="line"><span class="t-dim">[03:41:12]</span> <span class="t-neon">● price</span> <span class="t-white">$DOGE420</span> <span class="t-dim">0.000312 → 0.001580 SOL</span> <span class="t-neon">+406%</span></div>
+      <div class="line"><span class="t-dim">[03:41:12]</span> <span class="t-yellow">◎ match</span> <span class="t-white">Take Profit triggered @ 5x</span></div>
+      <div class="line"><span class="t-dim">[03:41:13]</span> <span class="t-neon">✓ filled</span> <span class="t-white">SELL 4,285 → 6.77 SOL</span> <span class="t-neon">+5.27 SOL profit</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="stack">
+  <div class="reveal">
+    <h2>Built Different</h2>
+    <p>Non-custodial. We never hold your funds. Every trade is signed by your wallet.</p>
+  </div>
+  <div class="stack-grid stagger">
+    <div class="stack-item reveal-child">
+      <div class="s-icon">◎</div>
+      <h4>Solana</h4>
+      <p>Sub-second finality</p>
+    </div>
+    <div class="stack-item reveal-child">
+      <div class="s-icon">⟐</div>
+      <h4>Jupiter</h4>
+      <p>Best swap routing</p>
+    </div>
+    <div class="stack-item reveal-child">
+      <div class="s-icon">◈</div>
+      <h4>Helius</h4>
+      <p>Real-time RPC</p>
+    </div>
+    <div class="stack-item reveal-child">
+      <div class="s-icon">⊕</div>
+      <h4>Non-Custodial</h4>
+      <p>Your keys always</p>
+    </div>
+  </div>
+</section>
+
+<section class="cta reveal">
+  <h2>Stop Watching Charts.<br>Start <span style="color:var(--neon)">Sniping.</span></h2>
+  <p>Connect your wallet and set your first order in under 30 seconds.</p>
+  <a href="./app.html" class="btn-main">Launch App</a>
+</section>
+
+<footer>
+  <div class="logo" style="font-size:15px"><div class="logo-icon" style="width:22px;height:22px;font-size:11px">⊕</div>SniperFi</div>
+  <div class="flinks">
+    <a href="https://x.com/UseSniperFi" target="_blank">Twitter</a>
+    <a href="./docs.html">Docs</a>
+    <a href="#">GitHub</a>
+  </div>
+  <div>© 2026 SniperFi</div>
+</footer>
+
+<script>
+// ─── PARTICLES ───
+const canvas=document.getElementById('particles'),ctx=canvas.getContext('2d');
+let particles=[];
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight}
+resize();addEventListener('resize',resize);
+class P{
+  constructor(){this.reset()}
+  reset(){this.x=Math.random()*canvas.width;this.y=Math.random()*canvas.height;this.s=Math.random()*1.5+.3;this.vx=(Math.random()-.5)*.3;this.vy=(Math.random()-.5)*.3;this.o=Math.random()*.4+.05;this.p=Math.random()*Math.PI*2}
+  update(){this.x+=this.vx;this.y+=this.vy;this.p+=.02;if(this.x<0||this.x>canvas.width||this.y<0||this.y>canvas.height)this.reset()}
+  draw(){const o=this.o*(.5+Math.sin(this.p)*.5);ctx.beginPath();ctx.arc(this.x,this.y,this.s,0,Math.PI*2);ctx.fillStyle=`rgba(0,255,136,${o})`;ctx.fill()}
+}
+for(let i=0;i<50;i++)particles.push(new P);
+function drawLines(){for(let i=0;i<particles.length;i++)for(let j=i+1;j<particles.length;j++){const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.strokeStyle=`rgba(0,255,136,${.04*(1-d/120)})`;ctx.lineWidth=.5;ctx.stroke()}}}
+function anim(){ctx.clearRect(0,0,canvas.width,canvas.height);particles.forEach(p=>{p.update();p.draw()});drawLines();requestAnimationFrame(anim)}
+anim();
+
+// ─── SCROLL REVEAL ───
+const obs=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting){el.target.classList.add('visible');if(el.target.classList.contains('tag'))el.target.classList.add('anim')}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal,.reveal-left,.stagger,.tag').forEach(el=>obs.observe(el));
+
+// ─── TERMINAL TYPING ───
+let tr=false;
+new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting&&!tr){tr=true;document.querySelectorAll('#termBody .line').forEach((l,i)=>{setTimeout(()=>l.classList.add('typed'),i*350)})}})},{threshold:.3}).observe(document.querySelector('.terminal'));
+
+// ─── PARALLAX GRID ───
+addEventListener('scroll',()=>{document.querySelector('.grid-bg').style.transform=`translateY(${scrollY*.05}px)`});
+</script>
+</body>
+</html>

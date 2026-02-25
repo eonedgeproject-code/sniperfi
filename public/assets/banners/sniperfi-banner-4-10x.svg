@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="ng" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00cc6a"/><stop offset="100%" style="stop-color:#00ff88"/>
+    </linearGradient>
+    <filter id="g"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="g2"><feGaussianBlur stdDeviation="12" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <radialGradient id="sp" cx="30%" cy="45%" r="45%">
+      <stop offset="0%" style="stop-color:#00ff88;stop-opacity:0.06"/><stop offset="100%" style="stop-color:#00ff88;stop-opacity:0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#0a0a0f"/>
+  <rect width="1200" height="630" fill="url(#sp)"/>
+  <g opacity="0.03" stroke="#00ff88" stroke-width="0.5">
+    <line x1="0" y1="105" x2="1200" y2="105"/><line x1="0" y1="210" x2="1200" y2="210"/><line x1="0" y1="315" x2="1200" y2="315"/><line x1="0" y1="420" x2="1200" y2="420"/><line x1="0" y1="525" x2="1200" y2="525"/>
+  </g>
+
+  <!-- Notification mockup (right side) -->
+  <g transform="translate(660, 90)">
+    <!-- Phone notification card -->
+    <rect x="0" y="0" width="420" height="380" rx="16" fill="#111118" stroke="#1f1f32" stroke-width="1.5" opacity="0.95"/>
+    <!-- Time -->
+    <text x="210" y="40" font-family="monospace" font-weight="700" font-size="48" fill="#ffffff" text-anchor="middle" opacity="0.15">3:47 AM</text>
+    
+    <!-- Notification 1 - pump alert -->
+    <rect x="24" y="70" width="372" height="68" rx="10" fill="#0a0a0f" stroke="#1f1f32" stroke-width="1"/>
+    <rect x="36" y="84" width="32" height="32" rx="6" fill="#00ff8812" stroke="#00ff8830" stroke-width="1"/>
+    <text x="52" y="106" font-family="monospace" font-size="14" fill="#00ff88" text-anchor="middle">⊕</text>
+    <text x="80" y="98" font-family="monospace" font-weight="700" font-size="12" fill="#ffffff">SniperFi</text>
+    <text x="370" y="98" font-family="monospace" font-size="9" fill="#7a7a99" text-anchor="end">3:47 AM</text>
+    <text x="80" y="118" font-family="monospace" font-size="11" fill="#00ff88">🎯 $MEOW hit 10x target!</text>
+    
+    <!-- Notification 2 - sold -->
+    <rect x="24" y="148" width="372" height="68" rx="10" fill="#0a0a0f" stroke="#00ff8830" stroke-width="1.5"/>
+    <rect x="36" y="162" width="32" height="32" rx="6" fill="#00ff8818" stroke="#00ff8850" stroke-width="1"/>
+    <text x="52" y="184" font-family="monospace" font-size="14" fill="#00ff88" text-anchor="middle">⊕</text>
+    <text x="80" y="176" font-family="monospace" font-weight="700" font-size="12" fill="#ffffff">SniperFi</text>
+    <text x="370" y="176" font-family="monospace" font-size="9" fill="#7a7a99" text-anchor="end">3:47 AM</text>
+    <text x="80" y="196" font-family="monospace" font-size="11" fill="#00ff88">✓ Take Profit filled: +4.5 SOL</text>
+    
+    <!-- Notification 3 - tx -->
+    <rect x="24" y="226" width="372" height="68" rx="10" fill="#0a0a0f" stroke="#1f1f32" stroke-width="1"/>
+    <rect x="36" y="240" width="32" height="32" rx="6" fill="#00ff8812" stroke="#00ff8830" stroke-width="1"/>
+    <text x="52" y="262" font-family="monospace" font-size="14" fill="#00ff88" text-anchor="middle">⊕</text>
+    <text x="80" y="254" font-family="monospace" font-weight="700" font-size="12" fill="#ffffff">SniperFi</text>
+    <text x="370" y="254" font-family="monospace" font-size="9" fill="#7a7a99" text-anchor="end">3:47 AM</text>
+    <text x="80" y="274" font-family="monospace" font-size="11" fill="#7a7a99">tx: 5KxR...mN2p confirmed ◎</text>
+
+    <!-- PnL Summary card -->
+    <rect x="24" y="310" width="372" height="56" rx="10" fill="#00ff8808" stroke="#00ff8825" stroke-width="1"/>
+    <text x="44" y="335" font-family="monospace" font-size="10" fill="#7a7a99">SESSION PNL</text>
+    <text x="44" y="354" font-family="monospace" font-weight="800" font-size="16" fill="#00ff88" filter="url(#g)">+4.50 SOL</text>
+    <text x="200" y="335" font-family="monospace" font-size="10" fill="#7a7a99">WIN RATE</text>
+    <text x="200" y="354" font-family="monospace" font-weight="800" font-size="16" fill="#00ff88">100%</text>
+    <text x="320" y="335" font-family="monospace" font-size="10" fill="#7a7a99">ROI</text>
+    <text x="320" y="354" font-family="monospace" font-weight="800" font-size="16" fill="#00ff88">+900%</text>
+  </g>
+
+  <!-- Left text -->
+  <rect x="80" y="120" width="135" height="28" rx="14" fill="none" stroke="#00ff88" stroke-width="1" opacity="0.4"/>
+  <circle cx="98" cy="134" r="3" fill="#00ff88"/>
+  <text x="110" y="139" font-family="monospace" font-size="10" fill="#00ff88" opacity="0.7" letter-spacing="2">TAKE PROFIT</text>
+  
+  <text x="80" y="210" font-family="monospace" font-weight="900" font-size="62" fill="#ffffff" letter-spacing="-2">It Pumped</text>
+  <text x="80" y="280" font-family="monospace" font-weight="900" font-size="62" fill="url(#ng)" filter="url(#g)" letter-spacing="-2">10x at 3AM.</text>
+  
+  <text x="80" y="330" font-family="monospace" font-weight="900" font-size="42" fill="#ffffff" opacity="0.5">You were asleep.</text>
+  <text x="80" y="375" font-family="monospace" font-weight="900" font-size="42" fill="url(#ng)" filter="url(#g)">SniperFi wasn't.</text>
+
+  <text x="80" y="420" font-family="monospace" font-size="16" fill="#7a7a99" letter-spacing="1">Auto-sell at your profit target. Never miss a pump again.</text>
+
+  <!-- CTA -->
+  <rect x="80" y="460" width="230" height="46" rx="7" fill="#00ff88" filter="url(#g)"/>
+  <text x="195" y="489" font-family="monospace" font-weight="800" font-size="15" fill="#0a0a0f" text-anchor="middle" letter-spacing="3">START SNIPING</text>
+
+  <!-- Logo -->
+  <rect x="80" y="575" width="24" height="24" rx="4" fill="none" stroke="#00ff88" stroke-width="1.5" opacity="0.5"/>
+  <text x="92" y="592" font-family="monospace" font-size="10" fill="#00ff88" opacity="0.5" text-anchor="middle">⊕</text>
+  <text x="114" y="593" font-family="monospace" font-weight="800" font-size="14" fill="#00ff88" opacity="0.5">SniperFi</text>
+  <text x="1100" y="593" font-family="monospace" font-size="11" fill="#7a7a99" opacity="0.3" text-anchor="end">@UseSniperFi</text>
+  <rect x="0" y="0" width="1200" height="2" fill="#00ff88" opacity="0.12"/>
+  <rect x="0" y="628" width="1200" height="2" fill="#00ff88" opacity="0.12"/>
+</svg>

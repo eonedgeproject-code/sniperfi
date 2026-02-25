@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="ng" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00cc6a"/><stop offset="100%" style="stop-color:#00ff88"/>
+    </linearGradient>
+    <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff3355"/><stop offset="100%" style="stop-color:#ff5577"/>
+    </linearGradient>
+    <filter id="g"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="g2"><feGaussianBlur stdDeviation="10" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <radialGradient id="rspot" cx="70%" cy="50%" r="40%">
+      <stop offset="0%" style="stop-color:#ff3355;stop-opacity:0.06"/><stop offset="100%" style="stop-color:#ff3355;stop-opacity:0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#0a0a0f"/>
+  <rect width="1200" height="630" fill="url(#rspot)"/>
+  <!-- Grid -->
+  <g opacity="0.04" stroke="#00ff88" stroke-width="0.5">
+    <line x1="0" y1="105" x2="1200" y2="105"/><line x1="0" y1="210" x2="1200" y2="210"/><line x1="0" y1="315" x2="1200" y2="315"/><line x1="0" y1="420" x2="1200" y2="420"/><line x1="0" y1="525" x2="1200" y2="525"/>
+    <line x1="200" y1="0" x2="200" y2="630"/><line x1="400" y1="0" x2="400" y2="630"/><line x1="600" y1="0" x2="600" y2="630"/><line x1="800" y1="0" x2="800" y2="630"/><line x1="1000" y1="0" x2="1000" y2="630"/>
+  </g>
+  <!-- Dump chart visualization -->
+  <g transform="translate(680, 80)">
+    <!-- Chart axes -->
+    <line x1="0" y1="0" x2="0" y2="380" stroke="#1f1f32" stroke-width="1"/>
+    <line x1="0" y1="380" x2="440" y2="380" stroke="#1f1f32" stroke-width="1"/>
+    <!-- Price labels -->
+    <text x="-10" y="50" font-family="monospace" font-size="9" fill="#7a7a99" opacity="0.4" text-anchor="end">ATH</text>
+    <text x="-10" y="340" font-family="monospace" font-size="9" fill="#ff3355" opacity="0.4" text-anchor="end">-80%</text>
+    <!-- Dump line -->
+    <polyline points="0,200 30,180 60,140 90,100 110,60 130,50 160,55 180,90 200,80 220,110 240,150 260,190 280,240 300,280 320,310 340,330 360,340 380,342 400,345 420,346" fill="none" stroke="url(#rg)" stroke-width="3" filter="url(#g)" opacity="0.8"/>
+    <!-- Dump area -->
+    <polyline points="0,200 30,180 60,140 90,100 110,60 130,50 160,55 180,90 200,80 220,110 240,150 260,190 280,240 300,280 320,310 340,330 360,340 380,342 400,345 420,346 420,380 0,380" fill="#ff3355" opacity="0.04"/>
+    <!-- Stop loss line -->
+    <line x1="0" y1="200" x2="440" y2="200" stroke="#00ff88" stroke-width="1.5" stroke-dasharray="8 6" opacity="0.5"/>
+    <rect x="345" y="188" width="95" height="24" rx="4" fill="#00ff8815" stroke="#00ff88" stroke-width="1" opacity="0.6"/>
+    <text x="392" y="205" font-family="monospace" font-size="10" fill="#00ff88" text-anchor="middle" opacity="0.8">STOP LOSS</text>
+    <!-- Shield icon at stop loss -->
+    <circle cx="182" cy="90" r="14" fill="#00ff8810" stroke="#00ff88" stroke-width="1.5" opacity="0.6"/>
+    <text x="182" y="95" font-family="monospace" font-size="11" fill="#00ff88" text-anchor="middle">✓</text>
+    <!-- You sold here label -->
+    <line x1="182" y1="105" x2="182" y2="145" stroke="#00ff88" stroke-width="0.8" opacity="0.3"/>
+    <text x="182" y="160" font-family="monospace" font-size="9" fill="#00ff88" text-anchor="middle" opacity="0.5">SOLD HERE</text>
+  </g>
+  <!-- Left content -->
+  <!-- Without vs With -->
+  <g transform="translate(100, 120)">
+    <rect x="0" y="0" width="110" height="26" rx="4" fill="#ff335518" stroke="#ff335540" stroke-width="1"/>
+    <text x="55" y="18" font-family="monospace" font-size="10" fill="#ff3355" text-anchor="middle" letter-spacing="2">WITHOUT</text>
+  </g>
+  <text x="100" y="190" font-family="monospace" font-weight="900" font-size="52" fill="#ff3355" opacity="0.7" letter-spacing="-1">-80% While</text>
+  <text x="100" y="245" font-family="monospace" font-weight="900" font-size="52" fill="#ff3355" opacity="0.7" letter-spacing="-1">You Slept.</text>
+  <!-- Divider -->
+  <line x1="100" y1="275" x2="550" y2="275" stroke="#1f1f32" stroke-width="1"/>
+  <!-- With SniperFi -->
+  <g transform="translate(100, 300)">
+    <rect x="0" y="0" width="155" height="26" rx="4" fill="#00ff8815" stroke="#00ff8840" stroke-width="1"/>
+    <text x="78" y="18" font-family="monospace" font-size="10" fill="#00ff88" text-anchor="middle" letter-spacing="2">WITH SNIPERFI</text>
+  </g>
+  <text x="100" y="370" font-family="monospace" font-weight="900" font-size="52" fill="url(#ng)" filter="url(#g)" letter-spacing="-1">Protected.</text>
+  <text x="100" y="425" font-family="monospace" font-weight="900" font-size="52" fill="url(#ng)" filter="url(#g)" letter-spacing="-1">Automatic.</text>
+  <!-- Sub -->
+  <text x="100" y="470" font-family="monospace" font-size="16" fill="#7a7a99" letter-spacing="1">Stop losses that actually work. Set it. Forget it.</text>
+  <!-- CTA -->
+  <rect x="100" y="500" width="260" height="46" rx="7" fill="#00ff88" filter="url(#g)"/>
+  <text x="230" y="529" font-family="monospace" font-weight="800" font-size="15" fill="#0a0a0f" text-anchor="middle" letter-spacing="3">PROTECT YOUR BAG</text>
+  <!-- Logo -->
+  <rect x="100" y="575" width="24" height="24" rx="4" fill="none" stroke="#00ff88" stroke-width="1.5" opacity="0.5"/>
+  <text x="112" y="592" font-family="monospace" font-size="10" fill="#00ff88" opacity="0.5" text-anchor="middle">⊕</text>
+  <text x="134" y="593" font-family="monospace" font-weight="800" font-size="14" fill="#00ff88" opacity="0.5">SniperFi</text>
+  <text x="1100" y="593" font-family="monospace" font-size="11" fill="#7a7a99" opacity="0.3" text-anchor="end">@UseSniperFi</text>
+  <rect x="0" y="0" width="1200" height="2" fill="#ff3355" opacity="0.15"/>
+  <rect x="0" y="628" width="1200" height="2" fill="#00ff88" opacity="0.12"/>
+</svg>

@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="neonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00ff88;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#00cc6a;stop-opacity:1"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="glowStrong">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="80" fill="#0a0a0f"/>
+  
+  <!-- Subtle grid -->
+  <g opacity="0.06" stroke="#00ff88" stroke-width="0.5">
+    <line x1="128" y1="0" x2="128" y2="512"/>
+    <line x1="256" y1="0" x2="256" y2="512"/>
+    <line x1="384" y1="0" x2="384" y2="512"/>
+    <line x1="0" y1="128" x2="512" y2="128"/>
+    <line x1="0" y1="256" x2="512" y2="256"/>
+    <line x1="0" y1="384" x2="512" y2="384"/>
+  </g>
+
+  <!-- Outer scope ring -->
+  <circle cx="256" cy="240" r="155" fill="none" stroke="#00ff88" stroke-width="3" opacity="0.15" filter="url(#glowStrong)"/>
+  
+  <!-- Main scope ring -->
+  <circle cx="256" cy="240" r="120" fill="none" stroke="url(#neonGrad)" stroke-width="4" filter="url(#glow)"/>
+  
+  <!-- Inner scope ring -->
+  <circle cx="256" cy="240" r="60" fill="none" stroke="#00ff88" stroke-width="2" opacity="0.4"/>
+  
+  <!-- Crosshair lines -->
+  <g stroke="#00ff88" stroke-width="3" filter="url(#glow)">
+    <!-- Top -->
+    <line x1="256" y1="80" x2="256" y2="170"/>
+    <!-- Bottom -->
+    <line x1="256" y1="310" x2="256" y2="400"/>
+    <!-- Left -->
+    <line x1="96" y1="240" x2="186" y2="240"/>
+    <!-- Right -->
+    <line x1="326" y1="240" x2="416" y2="240"/>
+  </g>
+  
+  <!-- Crosshair tick marks -->
+  <g stroke="#00ff88" stroke-width="2" opacity="0.5">
+    <!-- Top ticks -->
+    <line x1="240" y1="140" x2="272" y2="140"/>
+    <line x1="245" y1="160" x2="267" y2="160"/>
+    <!-- Bottom ticks -->
+    <line x1="240" y1="340" x2="272" y2="340"/>
+    <line x1="245" y1="320" x2="267" y2="320"/>
+    <!-- Left ticks -->
+    <line x1="156" y1="224" x2="156" y2="256"/>
+    <line x1="176" y1="229" x2="176" y2="251"/>
+    <!-- Right ticks -->
+    <line x1="356" y1="224" x2="356" y2="256"/>
+    <line x1="336" y1="229" x2="336" y2="251"/>
+  </g>
+
+  <!-- Center dot -->
+  <circle cx="256" cy="240" r="6" fill="#00ff88" filter="url(#glowStrong)"/>
+  <circle cx="256" cy="240" r="3" fill="#ffffff"/>
+
+  <!-- Corner brackets (scope housing) -->
+  <g stroke="#00ff88" stroke-width="3" fill="none" opacity="0.6" filter="url(#glow)">
+    <!-- Top-left -->
+    <path d="M130 130 L130 155 M130 130 L155 130"/>
+    <!-- Top-right -->
+    <path d="M382 130 L382 155 M382 130 L357 130"/>
+    <!-- Bottom-left -->
+    <path d="M130 350 L130 325 M130 350 L155 350"/>
+    <!-- Bottom-right -->
+    <path d="M382 350 L382 325 M382 350 L357 350"/>
+  </g>
+
+  <!-- Arrow/chevron indicator (sniper precision) -->
+  <g fill="#00ff88" opacity="0.7" filter="url(#glow)">
+    <polygon points="256,195 248,210 264,210"/>
+  </g>
+
+  <!-- Text: SniperFi -->
+  <text x="256" y="455" text-anchor="middle" font-family="monospace, 'Courier New'" font-weight="800" font-size="52" fill="url(#neonGrad)" filter="url(#glow)" letter-spacing="6">SNIPERFI</text>
+  
+  <!-- Tagline -->
+  <text x="256" y="485" text-anchor="middle" font-family="monospace, 'Courier New'" font-weight="400" font-size="14" fill="#00ff88" opacity="0.4" letter-spacing="4">LIMIT ORDERS</text>
+</svg>

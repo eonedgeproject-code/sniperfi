@@ -1,0 +1,178 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 500" width="1500" height="500">
+  <defs>
+    <linearGradient id="neonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00cc6a"/>
+      <stop offset="50%" style="stop-color:#00ff88"/>
+      <stop offset="100%" style="stop-color:#00cc6a"/>
+    </linearGradient>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#08080d"/>
+      <stop offset="50%" style="stop-color:#0a0a0f"/>
+      <stop offset="100%" style="stop-color:#07070c"/>
+    </linearGradient>
+    <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00ff88;stop-opacity:0"/>
+      <stop offset="50%" style="stop-color:#00ff88;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#00ff88;stop-opacity:0"/>
+    </linearGradient>
+    <linearGradient id="lineGradV" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00ff88;stop-opacity:0"/>
+      <stop offset="50%" style="stop-color:#00ff88;stop-opacity:0.4"/>
+      <stop offset="100%" style="stop-color:#00ff88;stop-opacity:0"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glowBig">
+      <feGaussianBlur stdDeviation="16" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glowText">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <radialGradient id="spotR" cx="75%" cy="40%" r="40%">
+      <stop offset="0%" style="stop-color:#00ff88;stop-opacity:0.06"/>
+      <stop offset="100%" style="stop-color:#00ff88;stop-opacity:0"/>
+    </radialGradient>
+    <radialGradient id="spotL" cx="15%" cy="60%" r="35%">
+      <stop offset="0%" style="stop-color:#00ff88;stop-opacity:0.04"/>
+      <stop offset="100%" style="stop-color:#00ff88;stop-opacity:0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1500" height="500" fill="url(#bgGrad)"/>
+  
+  <!-- Ambient glow spots -->
+  <rect width="1500" height="500" fill="url(#spotR)"/>
+  <rect width="1500" height="500" fill="url(#spotL)"/>
+
+  <!-- Grid -->
+  <g opacity="0.04" stroke="#00ff88" stroke-width="0.5">
+    <line x1="0" y1="100" x2="1500" y2="100"/>
+    <line x1="0" y1="200" x2="1500" y2="200"/>
+    <line x1="0" y1="300" x2="1500" y2="300"/>
+    <line x1="0" y1="400" x2="1500" y2="400"/>
+    <line x1="200" y1="0" x2="200" y2="500"/>
+    <line x1="400" y1="0" x2="400" y2="500"/>
+    <line x1="600" y1="0" x2="600" y2="500"/>
+    <line x1="800" y1="0" x2="800" y2="500"/>
+    <line x1="1000" y1="0" x2="1000" y2="500"/>
+    <line x1="1200" y1="0" x2="1200" y2="500"/>
+  </g>
+
+  <!-- Horizontal neon line -->
+  <line x1="0" y1="250" x2="1500" y2="250" stroke="url(#lineGrad)" stroke-width="1" opacity="0.3"/>
+
+  <!-- === LEFT SIDE: CROSSHAIR SCOPE === -->
+  
+  <!-- Scope positioned left-center -->
+  <!-- Outer ring glow -->
+  <circle cx="320" cy="250" r="165" fill="none" stroke="#00ff88" stroke-width="1.5" opacity="0.06" filter="url(#glowBig)"/>
+  
+  <!-- Main scope ring -->
+  <circle cx="320" cy="250" r="130" fill="none" stroke="url(#neonGrad)" stroke-width="3" filter="url(#glow)" opacity="0.9"/>
+  
+  <!-- Inner ring -->
+  <circle cx="320" cy="250" r="65" fill="none" stroke="#00ff88" stroke-width="1.5" opacity="0.3"/>
+  
+  <!-- Dashed orbit ring -->
+  <circle cx="320" cy="250" r="98" fill="none" stroke="#00ff88" stroke-width="0.8" opacity="0.12" stroke-dasharray="8 12"/>
+
+  <!-- Crosshair lines -->
+  <g stroke="#00ff88" stroke-width="2.5" filter="url(#glow)" opacity="0.9">
+    <line x1="320" y1="78" x2="320" y2="178"/>
+    <line x1="320" y1="322" x2="320" y2="422"/>
+    <line x1="148" y1="250" x2="248" y2="250"/>
+    <line x1="392" y1="250" x2="492" y2="250"/>
+  </g>
+
+  <!-- Tick marks -->
+  <g stroke="#00ff88" stroke-width="1.5" opacity="0.35">
+    <line x1="306" y1="148" x2="334" y2="148"/>
+    <line x1="311" y1="168" x2="329" y2="168"/>
+    <line x1="306" y1="352" x2="334" y2="352"/>
+    <line x1="311" y1="332" x2="329" y2="332"/>
+    <line x1="218" y1="236" x2="218" y2="264"/>
+    <line x1="238" y1="241" x2="238" y2="259"/>
+    <line x1="422" y1="236" x2="422" y2="264"/>
+    <line x1="402" y1="241" x2="402" y2="259"/>
+  </g>
+
+  <!-- Corner brackets -->
+  <g stroke="#00ff88" stroke-width="2.5" fill="none" opacity="0.4" stroke-linecap="round" filter="url(#glow)">
+    <path d="M185 130 L185 105 L210 105"/>
+    <path d="M455 130 L455 105 L430 105"/>
+    <path d="M185 370 L185 395 L210 395"/>
+    <path d="M455 370 L455 395 L430 395"/>
+  </g>
+
+  <!-- Chevron -->
+  <polygon points="320,208 311,225 329,225" fill="#00ff88" opacity="0.5" filter="url(#glow)"/>
+
+  <!-- Center dot -->
+  <circle cx="320" cy="250" r="5" fill="#00ff88" filter="url(#glowBig)" opacity="0.9"/>
+  <circle cx="320" cy="250" r="2.5" fill="#ffffff"/>
+
+  <!-- Small data fragments around scope -->
+  <g font-family="monospace, 'Courier New'" font-size="8" fill="#00ff88" opacity="0.15">
+    <text x="500" y="120">0x7F3a...9Bc2</text>
+    <text x="145" y="440">slot:298441022</text>
+    <text x="480" y="410">confirmed</text>
+    <text x="160" y="95">ws://helius</text>
+  </g>
+
+  <!-- === RIGHT SIDE: TEXT === -->
+  
+  <!-- Main title -->
+  <text x="780" y="215" font-family="monospace, 'Courier New'" font-weight="900" font-size="82" fill="url(#neonGrad)" filter="url(#glowText)" letter-spacing="5">SNIPERFI</text>
+  
+  <!-- Underline -->
+  <line x1="780" y1="232" x2="1070" y2="232" stroke="#00ff88" stroke-width="2" opacity="0.25" filter="url(#glow)"/>
+  
+  <!-- Tagline -->
+  <text x="783" y="275" font-family="monospace, 'Courier New'" font-weight="400" font-size="22" fill="#7a7a99" letter-spacing="2">Limit Orders for Pump.fun</text>
+
+  <!-- Feature pills -->
+  <g font-family="monospace, 'Courier New'" font-size="12" letter-spacing="1">
+    <!-- Pill 1 -->
+    <rect x="780" y="305" width="130" height="28" rx="4" fill="none" stroke="#00ff88" stroke-width="1" opacity="0.3"/>
+    <text x="845" y="324" fill="#00ff88" opacity="0.6" text-anchor="middle">LIMIT BUY</text>
+    <!-- Pill 2 -->
+    <rect x="920" y="305" width="145" height="28" rx="4" fill="none" stroke="#00ff88" stroke-width="1" opacity="0.3"/>
+    <text x="992" y="324" fill="#00ff88" opacity="0.6" text-anchor="middle">TAKE PROFIT</text>
+    <!-- Pill 3 -->
+    <rect x="1075" y="305" width="130" height="28" rx="4" fill="none" stroke="#00ff88" stroke-width="1" opacity="0.3"/>
+    <text x="1140" y="324" fill="#00ff88" opacity="0.6" text-anchor="middle">STOP LOSS</text>
+    <!-- Pill 4 -->
+    <rect x="1215" y="305" width="155" height="28" rx="4" fill="none" stroke="#00ff88" stroke-width="1" opacity="0.3"/>
+    <text x="1292" y="324" fill="#00ff88" opacity="0.6" text-anchor="middle">TRAILING STOP</text>
+  </g>
+
+  <!-- Bottom info bar -->
+  <g font-family="monospace, 'Courier New'" font-size="11" fill="#7a7a99" opacity="0.4" letter-spacing="1">
+    <text x="783" y="388">POWERED BY JUPITER</text>
+    <text x="180" y="388" fill="#00ff88" opacity="0.3">◎</text>
+    <text x="195" y="388">SOLANA</text>
+    <text x="1020" y="388">NON-CUSTODIAL</text>
+    <text x="1230" y="388">24/7 MONITORING</text>
+  </g>
+
+  <!-- Decorative scan lines (top & bottom edges) -->
+  <rect x="0" y="0" width="1500" height="2" fill="#00ff88" opacity="0.15"/>
+  <rect x="0" y="498" width="1500" height="2" fill="#00ff88" opacity="0.15"/>
+  
+  <!-- Corner accents -->
+  <g stroke="#00ff88" stroke-width="1.5" opacity="0.2">
+    <line x1="20" y1="20" x2="20" y2="50"/>
+    <line x1="20" y1="20" x2="50" y2="20"/>
+    <line x1="1480" y1="20" x2="1480" y2="50"/>
+    <line x1="1480" y1="20" x2="1450" y2="20"/>
+    <line x1="20" y1="480" x2="20" y2="450"/>
+    <line x1="20" y1="480" x2="50" y2="480"/>
+    <line x1="1480" y1="480" x2="1480" y2="450"/>
+    <line x1="1480" y1="480" x2="1450" y2="480"/>
+  </g>
+</svg>

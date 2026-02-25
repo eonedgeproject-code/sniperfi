@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SniperFi — Docs</title>
+<meta name="description" content="SniperFi documentation. Learn how to set limit orders, take profits & stop losses on Pump.fun tokens.">
+<link rel="icon" type="image/svg+xml" href="./assets/icons/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --neon:#00ff88;--neon-dim:#00ff8840;--neon-glow:#00ff8815;
+  --red:#ff3355;--yellow:#ffaa00;--blue:#3388ff;
+  --bg:#07070c;--bg2:#0d0d14;--bg3:#14141e;--bg4:#1a1a28;
+  --text:#e8e8f0;--text-dim:#6b6b88;--border:#1e1e30;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+
+/* GRID BG */
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.08;pointer-events:none;z-index:0}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 40px;display:flex;justify-content:space-between;align-items:center;background:rgba(7,7,12,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.logo{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:17px;color:var(--neon);text-shadow:0 0 14px var(--neon-dim);display:flex;align-items:center;gap:8px;text-decoration:none}
+.logo-icon{width:26px;height:26px;border:2px solid var(--neon);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 0 10px var(--neon-dim)}
+.nav-links{display:flex;gap:24px;align-items:center}
+.nav-links a{color:var(--text-dim);text-decoration:none;font-size:13px;font-weight:500;transition:color .3s;font-family:'JetBrains Mono',monospace}
+.nav-links a:hover,.nav-links a.active{color:var(--neon)}
+.btn-app{padding:8px 18px;background:var(--neon);color:var(--bg);border-radius:5px;font-weight:700;font-size:12px;font-family:'JetBrains Mono',monospace;text-decoration:none;box-shadow:0 0 12px var(--neon-dim);transition:all .2s}
+.btn-app:hover{box-shadow:0 0 24px var(--neon-dim)}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:240px 1fr;max-width:1200px;margin:0 auto;padding-top:52px;min-height:100vh;position:relative;z-index:1}
+
+/* SIDEBAR */
+.doc-sidebar{position:sticky;top:52px;height:calc(100vh - 52px);overflow-y:auto;padding:28px 0 28px 24px;border-right:1px solid var(--border)}
+.doc-sidebar::-webkit-scrollbar{width:3px}
+.doc-sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.sb-title{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:10px;padding-left:12px}
+.sb-group{margin-bottom:20px}
+.sb-link{display:block;padding:6px 12px;font-size:13px;color:var(--text-dim);text-decoration:none;border-left:2px solid transparent;transition:all .15s;border-radius:0 4px 4px 0}
+.sb-link:hover{color:var(--text);background:var(--bg3)}
+.sb-link.active{color:var(--neon);border-left-color:var(--neon);background:var(--neon-glow)}
+
+/* CONTENT */
+.doc-content{padding:40px 48px 80px;max-width:780px;overflow-y:auto}
+
+.doc-content h1{font-size:36px;font-weight:900;margin-bottom:8px;letter-spacing:-1px}
+.doc-content .subtitle{color:var(--text-dim);font-size:16px;margin-bottom:40px}
+
+.doc-content h2{font-size:24px;font-weight:800;margin:48px 0 16px;padding-top:24px;border-top:1px solid var(--border);letter-spacing:-.5px}
+.doc-content h2:first-of-type{border-top:none;margin-top:0;padding-top:0}
+
+.doc-content h3{font-size:17px;font-weight:700;margin:28px 0 10px;color:var(--neon)}
+
+.doc-content p{color:var(--text-dim);margin-bottom:16px;font-size:15px;line-height:1.8}
+.doc-content p strong{color:var(--text);font-weight:600}
+
+/* CODE BLOCKS */
+.code-block{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin:12px 0 20px;overflow-x:auto;position:relative}
+.code-block code{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);line-height:1.8;white-space:pre}
+.code-label{position:absolute;top:8px;right:12px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px}
+
+/* INLINE CODE */
+.doc-content code{font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--bg3);padding:2px 7px;border-radius:4px;color:var(--neon);border:1px solid var(--border)}
+
+/* CALLOUTS */
+.callout{padding:16px 20px;border-radius:8px;margin:16px 0 20px;font-size:14px;display:flex;gap:10px;align-items:flex-start;line-height:1.7}
+.callout .ic{font-size:16px;flex-shrink:0;margin-top:2px}
+.callout p{margin:0;color:var(--text-dim)}
+.callout.info{background:var(--neon-glow);border:1px solid var(--neon-dim)}
+.callout.info .ic{color:var(--neon)}
+.callout.warn{background:#ffaa0010;border:1px solid #ffaa0030}
+.callout.warn .ic{color:var(--yellow)}
+.callout.danger{background:#ff335510;border:1px solid #ff335530}
+.callout.danger .ic{color:var(--red)}
+
+/* TABLE */
+.doc-table{width:100%;border-collapse:collapse;margin:12px 0 24px;font-size:13px}
+.doc-table thead th{padding:10px 14px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border);background:var(--bg2)}
+.doc-table tbody td{padding:11px 14px;border-bottom:1px solid var(--border);color:var(--text-dim)}
+.doc-table tbody td:first-child{color:var(--text);font-weight:600}
+.doc-table tbody tr:hover{background:var(--bg2)}
+
+/* BADGES */
+.badge{display:inline-block;padding:2px 8px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700}
+.badge.green{background:var(--neon-glow);color:var(--neon);border:1px solid var(--neon-dim)}
+.badge.red{background:#ff335515;color:var(--red);border:1px solid #ff335530}
+.badge.yellow{background:#ffaa0015;color:var(--yellow);border:1px solid #ffaa0030}
+.badge.blue{background:#3388ff15;color:var(--blue);border:1px solid #3388ff30}
+
+/* STEP LIST */
+.step-list{list-style:none;margin:12px 0 24px;counter-reset:step}
+.step-list li{counter-increment:step;padding:10px 0 10px 44px;position:relative;color:var(--text-dim);font-size:14px;border-left:1px solid var(--border);margin-left:14px}
+.step-list li::before{content:counter(step);position:absolute;left:-14px;top:8px;width:28px;height:28px;background:var(--bg2);border:1px solid var(--neon-dim);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--neon);display:flex;align-items:center;justify-content:center}
+.step-list li:last-child{border-left-color:transparent}
+
+/* FAQ */
+.faq-item{border:1px solid var(--border);border-radius:8px;margin-bottom:8px;overflow:hidden}
+.faq-q{padding:14px 18px;font-weight:600;font-size:14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--bg2);transition:all .2s}
+.faq-q:hover{background:var(--bg3)}
+.faq-q .arrow{color:var(--text-dim);font-size:12px;transition:transform .2s}
+.faq-item.open .faq-q .arrow{transform:rotate(90deg)}
+.faq-a{padding:0 18px;max-height:0;overflow:hidden;transition:all .3s ease;background:var(--bg2)}
+.faq-item.open .faq-a{padding:0 18px 16px;max-height:500px}
+.faq-a p{color:var(--text-dim);font-size:13px;line-height:1.7;margin:0}
+
+/* FOOTER */
+.doc-footer{padding:32px 48px;border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);text-align:center}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .doc-sidebar{display:none}
+  .doc-content{padding:28px 20px 60px}
+  nav{padding:14px 20px}
+}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<nav>
+  <a class="logo" href="./index.html"><div class="logo-icon">⊕</div>SniperFi</a>
+  <div class="nav-links">
+    <a href="./index.html">Home</a>
+    <a href="#" class="active">Docs</a>
+    <a href="https://x.com/UseSniperFi" target="_blank">Twitter</a>
+    <a href="./app.html" class="btn-app">Open App</a>
+  </div>
+</nav>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="doc-sidebar">
+    <div class="sb-group">
+      <div class="sb-title">Getting Started</div>
+      <a href="#overview" class="sb-link active">Overview</a>
+      <a href="#quickstart" class="sb-link">Quick Start</a>
+      <a href="#connect" class="sb-link">Connect Wallet</a>
+    </div>
+    <div class="sb-group">
+      <div class="sb-title">Order Types</div>
+      <a href="#limit-buy" class="sb-link">Limit Buy</a>
+      <a href="#take-profit" class="sb-link">Take Profit</a>
+      <a href="#stop-loss" class="sb-link">Stop Loss</a>
+      <a href="#trailing-stop" class="sb-link">Trailing Stop</a>
+      <a href="#grad-snipe" class="sb-link">Graduation Snipe</a>
+    </div>
+    <div class="sb-group">
+      <div class="sb-title">Technical</div>
+      <a href="#architecture" class="sb-link">Architecture</a>
+      <a href="#execution" class="sb-link">Execution</a>
+      <a href="#security" class="sb-link">Security</a>
+    </div>
+    <div class="sb-group">
+      <div class="sb-title">Reference</div>
+      <a href="#fees" class="sb-link">Fees</a>
+      <a href="#limits" class="sb-link">Limits</a>
+      <a href="#faq" class="sb-link">FAQ</a>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="doc-content">
+
+    <h1>SniperFi Docs</h1>
+    <p class="subtitle">Everything you need to set limit orders on Pump.fun & PumpSwap tokens.</p>
+
+    <!-- OVERVIEW -->
+    <h2 id="overview">Overview</h2>
+    <p>
+      <strong>SniperFi</strong> is a limit order layer for Pump.fun and PumpSwap tokens on Solana. 
+      It lets you set buy and sell orders at specific price targets — something Pump.fun doesn't support natively.
+    </p>
+    <p>
+      Your orders are monitored 24/7. When a target price is hit, SniperFi executes the swap automatically through 
+      <strong>Jupiter</strong> for best routing and lowest slippage.
+    </p>
+
+    <div class="callout info">
+      <span class="ic">⚡</span>
+      <p><strong>Non-custodial.</strong> SniperFi never holds your funds. Every trade is signed and confirmed by your wallet. Your keys, your SOL.</p>
+    </div>
+
+    <h3>What You Can Do</h3>
+    <table class="doc-table">
+      <thead><tr><th>Feature</th><th>Description</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Limit Buy</td><td>Buy a token when price drops to your target</td><td><span class="badge green">Live</span></td></tr>
+        <tr><td>Take Profit</td><td>Auto-sell at a profit multiplier (2x, 5x, etc)</td><td><span class="badge green">Live</span></td></tr>
+        <tr><td>Stop Loss</td><td>Auto-sell if price drops below threshold</td><td><span class="badge green">Live</span></td></tr>
+        <tr><td>Trailing Stop</td><td>Dynamic stop that follows price upward</td><td><span class="badge green">Live</span></td></tr>
+        <tr><td>Graduation Snipe</td><td>Auto-buy on bonding curve graduation</td><td><span class="badge yellow">Soon</span></td></tr>
+      </tbody>
+    </table>
+
+    <!-- QUICKSTART -->
+    <h2 id="quickstart">Quick Start</h2>
+    <p>Get your first order placed in under 60 seconds.</p>
+    <ol class="step-list">
+      <li><strong>Connect your wallet</strong> — Phantom or Solflare. No sign-up required.</li>
+      <li><strong>Paste a token address</strong> — copy from Pump.fun, PumpSwap, or any Solana explorer.</li>
+      <li><strong>Choose order type</strong> — Limit Buy, Take Profit, Stop Loss, or Trailing Stop.</li>
+      <li><strong>Set target price & amount</strong> — use quick buttons or type manually.</li>
+      <li><strong>Confirm order</strong> — review the summary and hit Place Order.</li>
+    </ol>
+
+    <div class="callout warn">
+      <span class="ic">⚠</span>
+      <p>Always double-check the token address. Scam tokens often impersonate popular names. Verify on a Solana explorer first.</p>
+    </div>
+
+    <!-- CONNECT WALLET -->
+    <h2 id="connect">Connect Wallet</h2>
+    <p>
+      SniperFi supports <strong>Phantom</strong> and <strong>Solflare</strong> wallets. 
+      When you click Connect Wallet, your browser extension will prompt you to approve the connection.
+    </p>
+    <p>
+      SniperFi only requests <strong>read access</strong> to your public key and balance. 
+      Transaction signing happens individually for each order execution — you're always in control.
+    </p>
+
+    <div class="code-block">
+      <span class="code-label">How it works</span>
+      <code>1. Click "Connect Wallet"
+2. Approve in Phantom/Solflare popup
+3. Your address + SOL balance appear in the topbar
+4. You're ready to create orders</code>
+    </div>
+
+    <!-- LIMIT BUY -->
+    <h2 id="limit-buy">Limit Buy</h2>
+    <p>
+      A <strong>Limit Buy</strong> order lets you set a buy price below the current market price. 
+      When the token drops to your target, SniperFi automatically buys it for you.
+    </p>
+
+    <h3>Use Case</h3>
+    <p>
+      You're watching <code>$DOGE420</code> at 0.0005 SOL. You think it'll dip to 0.0003 SOL before pumping. 
+      Set a Limit Buy at 0.0003 SOL with 1 SOL amount. If it dips — you buy. If it doesn't — nothing happens.
+    </p>
+
+    <h3>Parameters</h3>
+    <table class="doc-table">
+      <thead><tr><th>Field</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Target Price</td><td>The price at which you want to buy (in SOL per token)</td></tr>
+        <tr><td>Amount</td><td>How much SOL to spend on the buy</td></tr>
+        <tr><td>Slippage</td><td>Max price tolerance during execution (default 5%)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout info">
+      <span class="ic">💡</span>
+      <p>Use the quick buttons (<strong>-10%, -20%, -30%, -50%</strong>) to set target price relative to the current price.</p>
+    </div>
+
+    <!-- TAKE PROFIT -->
+    <h2 id="take-profit">Take Profit</h2>
+    <p>
+      <strong>Take Profit</strong> auto-sells your tokens when the price reaches a target multiplier from your entry. 
+      Never miss a pump again.
+    </p>
+
+    <h3>Use Case</h3>
+    <p>
+      You bought <code>$MEOW</code> at 0.001 SOL. Set a Take Profit at <strong>5x</strong>. 
+      When price hits 0.005 SOL, SniperFi auto-sells your bag via Jupiter.
+    </p>
+
+    <h3>Parameters</h3>
+    <table class="doc-table">
+      <thead><tr><th>Field</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Target Multiplier</td><td>The profit multiplier to sell at (e.g., 2x, 5x, 10x)</td></tr>
+        <tr><td>Amount</td><td>How much SOL worth of tokens to sell</td></tr>
+        <tr><td>Slippage</td><td>Max price tolerance during execution</td></tr>
+      </tbody>
+    </table>
+
+    <!-- STOP LOSS -->
+    <h2 id="stop-loss">Stop Loss</h2>
+    <p>
+      <strong>Stop Loss</strong> protects your capital by auto-selling when a token drops below your set threshold. 
+      Sleep peacefully knowing your downside is capped.
+    </p>
+
+    <h3>Use Case</h3>
+    <p>
+      You're holding <code>$PUMP</code>. Set a Stop Loss at <strong>-30%</strong>. 
+      If price drops 30% from your entry, SniperFi sells immediately. Worst case: you lose 30%, not 90%.
+    </p>
+
+    <h3>Parameters</h3>
+    <table class="doc-table">
+      <thead><tr><th>Field</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Stop Level</td><td>Percentage drop from entry that triggers the sell</td></tr>
+        <tr><td>Amount</td><td>How much SOL worth of tokens to sell</td></tr>
+        <tr><td>Slippage</td><td>Max price tolerance during execution</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout danger">
+      <span class="ic">⚠</span>
+      <p><strong>Warning:</strong> In extreme dumps with low liquidity, execution price may differ from your stop level. 
+      Slippage tolerance controls the maximum deviation.</p>
+    </div>
+
+    <!-- TRAILING STOP -->
+    <h2 id="trailing-stop">Trailing Stop</h2>
+    <p>
+      A <strong>Trailing Stop</strong> dynamically follows the price upward and sells when it drops a set percentage from the highest observed price. 
+      It lets you ride pumps while protecting gains.
+    </p>
+
+    <h3>How It Works</h3>
+    <div class="code-block">
+      <code>Token price: 0.001 → 0.005 → 0.010 → 0.008
+Trail set at: 15%
+
+Peak tracked: 0.010 SOL
+Trigger price: 0.010 × 0.85 = 0.0085 SOL
+Price hits 0.008 → SELL triggered ✓
+
+Result: You sold near the top instead of riding it back down.</code>
+    </div>
+
+    <h3>Parameters</h3>
+    <table class="doc-table">
+      <thead><tr><th>Field</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Trail Distance</td><td>Percentage drop from peak that triggers sell (e.g., 10%, 15%)</td></tr>
+        <tr><td>Amount</td><td>How much SOL worth of tokens to sell</td></tr>
+        <tr><td>Slippage</td><td>Max price tolerance during execution</td></tr>
+      </tbody>
+    </table>
+
+    <!-- GRADUATION SNIPE -->
+    <h2 id="grad-snipe">Graduation Snipe</h2>
+    <p>
+      <strong>Graduation Snipe</strong> auto-buys a token the moment it graduates from the Pump.fun bonding curve to PumpSwap. 
+      This is the instant when liquidity is deployed and real trading begins.
+    </p>
+
+    <div class="callout yellow warn">
+      <span class="ic">🚧</span>
+      <p><strong>Coming soon.</strong> Graduation Snipe is under development and not yet available.</p>
+    </div>
+
+    <h3>Parameters (Planned)</h3>
+    <table class="doc-table">
+      <thead><tr><th>Field</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Token Address</td><td>The bonding curve token to watch</td></tr>
+        <tr><td>Max Price</td><td>Maximum price you're willing to buy at</td></tr>
+        <tr><td>Amount</td><td>SOL to spend on the buy</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ARCHITECTURE -->
+    <h2 id="architecture">Architecture</h2>
+    <p>SniperFi is built with a simple, reliable stack:</p>
+
+    <table class="doc-table">
+      <thead><tr><th>Component</th><th>Tech</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>Price Feed</td><td>Helius WebSocket</td><td>Real-time price monitoring via Solana RPC</td></tr>
+        <tr><td>Execution</td><td>Jupiter SDK</td><td>Swap routing with best price & MEV protection</td></tr>
+        <tr><td>Backend</td><td>Node.js</td><td>Order engine, price matching, execution logic</td></tr>
+        <tr><td>Database</td><td>Supabase</td><td>Pending orders, history, user data</td></tr>
+        <tr><td>Frontend</td><td>Next.js</td><td>Dashboard, order management, wallet integration</td></tr>
+        <tr><td>Wallet</td><td>Solana Wallet Adapter</td><td>Phantom & Solflare support</td></tr>
+      </tbody>
+    </table>
+
+    <!-- EXECUTION -->
+    <h2 id="execution">Execution</h2>
+    <p>When a target price is hit, the execution flow is:</p>
+
+    <div class="code-block">
+      <span class="code-label">Flow</span>
+      <code>1. Price monitor detects target match
+2. Jupiter quote requested for best route
+3. Transaction built with user's token account
+4. Transaction sent to Solana network
+5. Confirmation received → order marked as filled
+6. User notified (dashboard updates)</code>
+    </div>
+
+    <p>
+      <strong>Execution speed</strong> depends on Solana network conditions. Under normal conditions, 
+      orders execute within <strong>1-3 seconds</strong> of price target being hit.
+    </p>
+
+    <div class="callout warn">
+      <span class="ic">⚠</span>
+      <p>During high congestion, transactions may take longer or fail. Failed transactions are retried automatically up to 3 times.</p>
+    </div>
+
+    <!-- SECURITY -->
+    <h2 id="security">Security</h2>
+    <p>SniperFi follows a <strong>non-custodial</strong> model. Here's what that means:</p>
+
+    <table class="doc-table">
+      <thead><tr><th>Concern</th><th>How We Handle It</th></tr></thead>
+      <tbody>
+        <tr><td>Private Keys</td><td>Never stored, never transmitted. Your wallet holds them.</td></tr>
+        <tr><td>Funds</td><td>Stay in your wallet until a trade executes. We never hold SOL or tokens.</td></tr>
+        <tr><td>Transaction Signing</td><td>Each swap requires your wallet's signature. No blanket approvals.</td></tr>
+        <tr><td>Token Approvals</td><td>Minimal — only what's needed for the specific swap.</td></tr>
+        <tr><td>Order Data</td><td>Stored in Supabase with row-level security per wallet.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout danger">
+      <span class="ic">🔒</span>
+      <p><strong>Never share your seed phrase.</strong> SniperFi will never ask for it. If someone contacts you claiming to be SniperFi support asking for your seed — it's a scam.</p>
+    </div>
+
+    <!-- FEES -->
+    <h2 id="fees">Fees</h2>
+
+    <table class="doc-table">
+      <thead><tr><th>Fee Type</th><th>Amount</th><th>When</th></tr></thead>
+      <tbody>
+        <tr><td>Platform Fee</td><td><strong>0.5%</strong> per filled order</td><td>Only when an order executes successfully</td></tr>
+        <tr><td>Creating Orders</td><td>Free</td><td>—</td></tr>
+        <tr><td>Cancelling Orders</td><td>Free</td><td>—</td></tr>
+        <tr><td>Network Fee</td><td>~0.000005 SOL</td><td>Standard Solana transaction fee</td></tr>
+        <tr><td>Jupiter Fee</td><td>Included in route</td><td>Part of Jupiter swap routing</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout info">
+      <span class="ic">💡</span>
+      <p>You only pay the 0.5% fee when your order is <strong>actually filled</strong>. No fill = no fee. Cancelled orders are always free.</p>
+    </div>
+
+    <!-- LIMITS -->
+    <h2 id="limits">Limits</h2>
+
+    <table class="doc-table">
+      <thead><tr><th>Parameter</th><th>Free Tier</th><th>Pro</th></tr></thead>
+      <tbody>
+        <tr><td>Concurrent Orders</td><td>3</td><td>Unlimited</td></tr>
+        <tr><td>Min Order Size</td><td>0.01 SOL</td><td>0.01 SOL</td></tr>
+        <tr><td>Max Order Size</td><td>10 SOL</td><td>100 SOL</td></tr>
+        <tr><td>Supported Tokens</td><td>Pump.fun + PumpSwap</td><td>Pump.fun + PumpSwap + all Jupiter tokens</td></tr>
+        <tr><td>Price Check Interval</td><td>~5 seconds</td><td>~1 second</td></tr>
+        <tr><td>Fee</td><td>0.5% per fill</td><td>0.5% per fill</td></tr>
+      </tbody>
+    </table>
+
+    <!-- FAQ -->
+    <h2 id="faq">FAQ</h2>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Is SniperFi safe to use?<span class="arrow">›</span></div>
+      <div class="faq-a"><p>SniperFi is non-custodial. We never hold your private keys or funds. Every trade requires your wallet signature. Your tokens stay in your wallet until a swap executes on-chain.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Which wallets are supported?<span class="arrow">›</span></div>
+      <div class="faq-a"><p>Phantom and Solflare. More wallet support is planned.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">What if my order doesn't fill?<span class="arrow">›</span></div>
+      <div class="faq-a"><p>If the token price never reaches your target, nothing happens. Your SOL stays in your wallet. No fee is charged for unfilled orders.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Can I cancel an order?<span class="arrow">›</span></div>
+      <div class="faq-a"><p>Yes. Cancel any active order at any time from the dashboard — completely free.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">How fast are executions?<span class="arrow">›</span></div>
+      <div class="faq-a"><p>Under normal Solana network conditions, orders execute within 1-3 seconds of the target price being hit. During high congestion, it may take longer. Failed transactions are retried up to 3 times.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Does SniperFi work with all Solana tokens?<span class="arrow">›</span></div>
+      <div class="faq-a"><p>Currently focused on Pump.fun and PumpSwap tokens. Pro tier supports all tokens available on Jupiter's routing.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">What is MEV protection?<span class="arrow">›</span></div>
+      <div class="faq-a"><p>Jupiter routes swaps through MEV-protected paths, which helps prevent sandwich attacks and front-running on your trades.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">What happens during a rug pull?<span class="arrow">›</span></div>
+      <div class="faq-a"><p>If you have a Stop Loss set, it will trigger when the price drops past your threshold. However, in extreme rug scenarios with zero liquidity, the sell may not execute because there are no buyers. SniperFi cannot protect against tokens with zero remaining liquidity.</p></div>
+    </div>
+
+    <div class="doc-footer">
+      <p>© 2026 SniperFi — Built on Solana · Powered by Jupiter</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// FAQ Toggle
+function toggleFaq(el) {
+  el.parentElement.classList.toggle('open');
+}
+
+// Sidebar active state on scroll
+const sections = document.querySelectorAll('h2[id], h3[id]');
+const sbLinks = document.querySelectorAll('.sb-link');
+
+function updateSidebar() {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  sbLinks.forEach(l => {
+    l.classList.remove('active');
+    if (l.getAttribute('href') === '#' + current) l.classList.add('active');
+  });
+}
+
+window.addEventListener('scroll', updateSidebar);
+sbLinks.forEach(l => {
+  l.addEventListener('click', function(e) {
+    e.preventDefault();
+    const id = this.getAttribute('href').slice(1);
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+
+</body>
+</html>
