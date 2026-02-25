@@ -1,77 +1,38 @@
 require('dotenv').config();
 const { createClient } = require('@supabase/supabase-js');
 
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
+  console.error('[db] ✗ SUPABASE_URL and SUPABASE_KEY required in .env');
+  process.exit(1);
+}
+
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_KEY
 );
 
-/*
-  Supabase SQL — run this in the SQL editor to create tables:
+// ─── ORDERS ───
 
-  CREATE TABLE orders (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    wallet TEXT NOT NULL,
-    token_address TEXT NOT NULL,
-    order_type TEXT NOT NULL CHECK (order_type IN ('limit_buy', 'take_profit', 'stop_loss', 'trailing_stop')),
-    target_price NUMERIC,
-    target_multiplier NUMERIC,
-    trail_percent NUMERIC,
-    amount_sol NUMERIC NOT NULL,
-    slippage NUMERIC DEFAULT 5,
-    status TEXT DEFAULT 'active' CHECK (status IN ('active', 'filled', 'cancelled', 'failed')),
-    peak_price NUMERIC,
-    entry_price NUMERIC,
-    fill_price NUMERIC,
-    fill_tx TEXT,
-    fill_sol NUMERIC,
-    fee_sol NUMERIC,
-    created_at TIMESTAMPTZ DEFAULT now(),
-    filled_at TIMESTAMPTZ,
-    updated_at TIMESTAMPTZ DEFAULT now()
-  );
-
-  CREATE INDEX idx_orders_wallet ON orders(wallet);
-  CREATE INDEX idx_orders_status ON orders(status);
-  CREATE INDEX idx_orders_token ON orders(token_address);
-
-  -- Row Level Security
-  ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
-
-  CREATE POLICY "Users see own orders"
-    ON orders FOR SELECT
-    USING (wallet = current_setting('request.jwt.claims')::json->>'wallet');
-
-  CREATE POLICY "Users create own orders"
-    ON orders FOR INSERT
-    WITH CHECK (wallet = current_setting('request.jwt.claims')::json->>'wallet');
-
-  CREATE POLICY "Users update own orders"
-    ON orders FOR UPDATE
-    USING (wallet = current_setting('request.jwt.claims')::json->>'wallet');
-*/
-
-// ─── Order CRUD ───
-
-async function createOrder({ wallet, token_address, order_type, target_price, target_multiplier, trail_percent, amount_sol, slippage, entry_price }) {
+async function createOrder({ wallet, token_address, token_symbol, order_type, target_price, target_multiplier, trail_percent, amount_sol, slippage, entry_price }) {
   const { data, error } = await supabase
     .from('orders')
     .insert({
       wallet,
       token_address,
+      token_symbol: token_symbol || null,
       order_type,
-      target_price,
-      target_multiplier,
-      trail_percent,
+      target_price: target_price || null,
+      target_multiplier: target_multiplier || null,
+      trail_percent: trail_percent || null,
       amount_sol,
       slippage: slippage || 5,
-      entry_price,
+      entry_price: entry_price || null,
       status: 'active'
     })
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) throw new Error(`createOrder: ${error.message}`);
   return data;
 }
 
@@ -80,21 +41,36 @@ async function getActiveOrders() {
     .from('orders')
     .select('*')
     .eq('status', 'active')
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: true });
 
-  if (error) throw error;
+  if (error) throw new Error(`getActiveOrders: ${error.message}`);
   return data || [];
 }
 
-async function getOrdersByWallet(wallet) {
-  const { data, error } = await supabase
+async function getOrdersByWallet(wallet, status = null) {
+  let query = supabase
     .from('orders')
     .select('*')
     .eq('wallet', wallet)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(100);
 
-  if (error) throw error;
+  if (status) query = query.eq('status', status);
+
+  const { data, error } = await query;
+  if (error) throw new Error(`getOrdersByWallet: ${error.message}`);
   return data || [];
+}
+
+async function getOrderById(id) {
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) return null;
+  return data;
 }
 
 async function cancelOrder(id, wallet) {
@@ -107,7 +83,7 @@ async function cancelOrder(id, wallet) {
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) throw new Error(`cancelOrder: ${error.message}`);
   return data;
 }
 
@@ -127,22 +103,23 @@ async function fillOrder(id, { fill_price, fill_tx, fill_sol, fee_sol }) {
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) throw new Error(`fillOrder: ${error.message}`);
   return data;
 }
 
-async function failOrder(id, reason) {
+async function failOrder(id, reason = '') {
   const { data, error } = await supabase
     .from('orders')
     .update({
       status: 'failed',
+      fail_reason: reason,
       updated_at: new Date().toISOString()
     })
     .eq('id', id)
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) throw new Error(`failOrder: ${error.message}`);
   return data;
 }
 
@@ -152,7 +129,57 @@ async function updatePeakPrice(id, peak_price) {
     .update({ peak_price, updated_at: new Date().toISOString() })
     .eq('id', id);
 
-  if (error) throw error;
+  if (error) throw new Error(`updatePeakPrice: ${error.message}`);
+}
+
+async function getActiveOrderCountByWallet(wallet) {
+  const { count, error } = await supabase
+    .from('orders')
+    .select('*', { count: 'exact', head: true })
+    .eq('wallet', wallet)
+    .eq('status', 'active');
+
+  if (error) throw new Error(`getActiveOrderCount: ${error.message}`);
+  return count || 0;
+}
+
+async function getStats(wallet) {
+  const { data, error } = await supabase
+    .from('orders')
+    .select('status, fill_sol, amount_sol, fee_sol')
+    .eq('wallet', wallet);
+
+  if (error) throw new Error(`getStats: ${error.message}`);
+
+  const filled = data.filter(o => o.status === 'filled');
+  const active = data.filter(o => o.status === 'active');
+
+  let totalPnl = 0;
+  let wins = 0;
+  filled.forEach(o => {
+    const pnl = (o.fill_sol || 0) - (o.amount_sol || 0) - (o.fee_sol || 0);
+    totalPnl += pnl;
+    if (pnl > 0) wins++;
+  });
+
+  return {
+    total_orders: data.length,
+    active_orders: active.length,
+    filled_orders: filled.length,
+    total_pnl: Math.round(totalPnl * 10000) / 10000,
+    win_rate: filled.length > 0 ? Math.round((wins / filled.length) * 100) : 0,
+    total_fees: filled.reduce((sum, o) => sum + (o.fee_sol || 0), 0)
+  };
+}
+
+// ─── Health check ───
+async function ping() {
+  try {
+    const { error } = await supabase.from('orders').select('id').limit(1);
+    return !error;
+  } catch {
+    return false;
+  }
 }
 
 module.exports = {
@@ -160,8 +187,12 @@ module.exports = {
   createOrder,
   getActiveOrders,
   getOrdersByWallet,
+  getOrderById,
   cancelOrder,
   fillOrder,
   failOrder,
-  updatePeakPrice
+  updatePeakPrice,
+  getActiveOrderCountByWallet,
+  getStats,
+  ping
 };

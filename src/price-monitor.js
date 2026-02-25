@@ -2,174 +2,205 @@ require('dotenv').config();
 const WebSocket = require('ws');
 const EventEmitter = require('events');
 
+const JUPITER_PRICE_URL = 'https://price.jup.ag/v6/price';
+const SOL_MINT = 'So11111111111111111111111111111111111111112';
+
 class PriceMonitor extends EventEmitter {
-  constructor() {
+  constructor(opts = {}) {
     super();
-    this.ws = null;
-    this.prices = new Map();       // token_address -> current_price_sol
-    this.watching = new Set();     // token addresses being watched
-    this.reconnectDelay = 1000;
-    this.maxReconnectDelay = 30000;
-    this.pingInterval = null;
+    this.prices = new Map();       // token -> { price, symbol, updatedAt }
+    this.watching = new Set();
+    this.pollInterval = opts.pollInterval || 3000;  // 3s default
+    this._pollTimer = null;
+    this._ws = null;
+    this._wsReconnectDelay = 1000;
   }
 
-  connect() {
-    const url = process.env.HELIUS_WS_URL;
-    if (!url) {
-      console.error('[price-monitor] HELIUS_WS_URL not set');
-      return;
-    }
-
-    console.log('[price-monitor] connecting to Helius...');
-    this.ws = new WebSocket(url);
-
-    this.ws.on('open', () => {
-      console.log('[price-monitor] ● connected');
-      this.reconnectDelay = 1000;
-
-      // Re-subscribe all watched tokens
-      for (const token of this.watching) {
-        this._subscribe(token);
-      }
-
-      // Keep alive
-      this.pingInterval = setInterval(() => {
-        if (this.ws?.readyState === WebSocket.OPEN) {
-          this.ws.ping();
-        }
-      }, 30000);
-    });
-
-    this.ws.on('message', (data) => {
-      try {
-        const msg = JSON.parse(data.toString());
-        this._handleMessage(msg);
-      } catch (e) {
-        // ignore parse errors
-      }
-    });
-
-    this.ws.on('close', () => {
-      console.log('[price-monitor] disconnected, reconnecting in', this.reconnectDelay + 'ms');
-      clearInterval(this.pingInterval);
-      setTimeout(() => this.connect(), this.reconnectDelay);
-      this.reconnectDelay = Math.min(this.reconnectDelay * 2, this.maxReconnectDelay);
-    });
-
-    this.ws.on('error', (err) => {
-      console.error('[price-monitor] error:', err.message);
-    });
-  }
+  // ─── Watch / Unwatch ───
 
   watch(tokenAddress) {
+    if (this.watching.has(tokenAddress)) return;
     this.watching.add(tokenAddress);
-    if (this.ws?.readyState === WebSocket.OPEN) {
-      this._subscribe(tokenAddress);
-    }
-    console.log(`[price-monitor] watching ${tokenAddress.slice(0, 8)}... (${this.watching.size} total)`);
+    console.log(`[price] + watching ${tokenAddress.slice(0, 8)}... (${this.watching.size} total)`);
   }
 
   unwatch(tokenAddress) {
     this.watching.delete(tokenAddress);
-    if (this.ws?.readyState === WebSocket.OPEN) {
-      this._unsubscribe(tokenAddress);
-    }
+    this.prices.delete(tokenAddress);
+    console.log(`[price] - unwatched ${tokenAddress.slice(0, 8)}... (${this.watching.size} total)`);
   }
 
   getPrice(tokenAddress) {
+    const entry = this.prices.get(tokenAddress);
+    return entry ? entry.price : null;
+  }
+
+  getPriceData(tokenAddress) {
     return this.prices.get(tokenAddress) || null;
   }
 
-  _subscribe(tokenAddress) {
-    // Subscribe to token account changes via Helius
-    // This watches the token's liquidity pool for price changes
-    this.ws.send(JSON.stringify({
-      jsonrpc: '2.0',
-      id: 1,
-      method: 'accountSubscribe',
-      params: [
-        tokenAddress,
-        { encoding: 'jsonParsed', commitment: 'confirmed' }
-      ]
-    }));
+  // ─── Jupiter Polling (MVP — reliable, works immediately) ───
+
+  startPolling(intervalMs) {
+    this.pollInterval = intervalMs || this.pollInterval;
+    console.log(`[price] ● polling started (${this.pollInterval}ms)`);
+    this._poll(); // first poll immediately
+    this._pollTimer = setInterval(() => this._poll(), this.pollInterval);
   }
 
-  _unsubscribe(tokenAddress) {
-    // TODO: track subscription IDs and unsubscribe properly
-  }
-
-  _handleMessage(msg) {
-    // Handle account change notifications
-    if (msg.method === 'accountNotification') {
-      const { subscription, result } = msg.params || {};
-      // Parse price from account data
-      // This is simplified — real implementation needs to decode
-      // the AMM pool state to calculate token price
-      this.emit('accountUpdate', result);
-    }
-
-    // Handle subscription confirmations
-    if (msg.result && typeof msg.result === 'number') {
-      // subscription ID received
+  stopPolling() {
+    if (this._pollTimer) {
+      clearInterval(this._pollTimer);
+      this._pollTimer = null;
+      console.log('[price] polling stopped');
     }
   }
 
-  // Alternative: Poll Jupiter Price API (simpler, works immediately)
-  async pollPrices() {
+  async _poll() {
     if (this.watching.size === 0) return;
 
     const tokens = Array.from(this.watching);
-    const batchSize = 50;
+    const BATCH = 100; // Jupiter supports up to 100 per request
 
-    for (let i = 0; i < tokens.length; i += batchSize) {
-      const batch = tokens.slice(i, i + batchSize);
-      const ids = batch.join(',');
+    for (let i = 0; i < tokens.length; i += BATCH) {
+      const batch = tokens.slice(i, i + BATCH);
 
       try {
-        const res = await fetch(`https://price.jup.ag/v6/price?ids=${ids}&vsToken=So11111111111111111111111111111111111111112`);
-        const data = await res.json();
+        const ids = batch.join(',');
+        const url = `${JUPITER_PRICE_URL}?ids=${ids}&vsToken=${SOL_MINT}`;
+        const res = await fetch(url);
 
-        if (data.data) {
-          for (const [addr, info] of Object.entries(data.data)) {
-            const oldPrice = this.prices.get(addr);
-            const newPrice = info.price;
+        if (!res.ok) {
+          console.error(`[price] Jupiter API ${res.status}`);
+          continue;
+        }
 
-            this.prices.set(addr, newPrice);
+        const json = await res.json();
+        if (!json.data) continue;
 
-            if (oldPrice !== newPrice) {
-              this.emit('priceUpdate', {
-                token: addr,
-                price: newPrice,
-                symbol: info.mintSymbol,
-                oldPrice
-              });
-            }
+        for (const [addr, info] of Object.entries(json.data)) {
+          const newPrice = parseFloat(info.price);
+          const old = this.prices.get(addr);
+          const oldPrice = old ? old.price : null;
+
+          this.prices.set(addr, {
+            price: newPrice,
+            symbol: info.mintSymbol || null,
+            vsToken: 'SOL',
+            updatedAt: Date.now()
+          });
+
+          // Emit if price changed
+          if (oldPrice !== null && oldPrice !== newPrice) {
+            this.emit('priceUpdate', {
+              token: addr,
+              symbol: info.mintSymbol,
+              price: newPrice,
+              oldPrice,
+              change: ((newPrice - oldPrice) / oldPrice) * 100
+            });
+          } else if (oldPrice === null) {
+            // First price — emit so engine can evaluate immediately
+            this.emit('priceUpdate', {
+              token: addr,
+              symbol: info.mintSymbol,
+              price: newPrice,
+              oldPrice: null,
+              change: 0
+            });
           }
         }
+
+        // Mark tokens not in response (not indexed on Jupiter)
+        for (const addr of batch) {
+          if (!json.data[addr] && !this.prices.has(addr)) {
+            this.prices.set(addr, {
+              price: null,
+              symbol: null,
+              vsToken: 'SOL',
+              updatedAt: Date.now(),
+              error: 'not_indexed'
+            });
+          }
+        }
+
       } catch (e) {
-        console.error('[price-monitor] Jupiter poll error:', e.message);
+        console.error('[price] poll error:', e.message);
       }
     }
   }
 
-  // Start polling mode (recommended for MVP)
-  startPolling(intervalMs = 3000) {
-    console.log(`[price-monitor] polling mode started (${intervalMs}ms interval)`);
-    this.pollPrices();
-    this._pollTimer = setInterval(() => this.pollPrices(), intervalMs);
-  }
+  // ─── Single token price fetch (for API endpoint) ───
 
-  stopPolling() {
-    clearInterval(this._pollTimer);
-  }
+  async fetchPrice(tokenAddress) {
+    try {
+      const url = `${JUPITER_PRICE_URL}?ids=${tokenAddress}&vsToken=${SOL_MINT}`;
+      const res = await fetch(url);
+      const json = await res.json();
 
-  disconnect() {
-    this.stopPolling();
-    clearInterval(this.pingInterval);
-    if (this.ws) {
-      this.ws.close();
-      this.ws = null;
+      if (json.data && json.data[tokenAddress]) {
+        const info = json.data[tokenAddress];
+        return {
+          token: tokenAddress,
+          price: parseFloat(info.price),
+          symbol: info.mintSymbol,
+          vsToken: 'SOL'
+        };
+      }
+
+      return { token: tokenAddress, price: null, error: 'not_indexed' };
+    } catch (e) {
+      return { token: tokenAddress, price: null, error: e.message };
     }
+  }
+
+  // ─── Helius WebSocket (production — faster, real-time) ───
+
+  connectHelius() {
+    const url = process.env.HELIUS_WS_URL;
+    if (!url) {
+      console.log('[price] HELIUS_WS_URL not set, skipping WebSocket');
+      return;
+    }
+
+    console.log('[price] connecting Helius WebSocket...');
+    this._ws = new WebSocket(url);
+
+    this._ws.on('open', () => {
+      console.log('[price] ● Helius WS connected');
+      this._wsReconnectDelay = 1000;
+    });
+
+    this._ws.on('message', (raw) => {
+      try {
+        const msg = JSON.parse(raw.toString());
+        if (msg.method === 'accountNotification') {
+          this.emit('accountUpdate', msg.params);
+        }
+      } catch {}
+    });
+
+    this._ws.on('close', () => {
+      console.log('[price] Helius WS disconnected');
+      setTimeout(() => this.connectHelius(), this._wsReconnectDelay);
+      this._wsReconnectDelay = Math.min(this._wsReconnectDelay * 2, 30000);
+    });
+
+    this._ws.on('error', (e) => {
+      console.error('[price] Helius WS error:', e.message);
+    });
+  }
+
+  // ─── Cleanup ───
+
+  stop() {
+    this.stopPolling();
+    if (this._ws) {
+      this._ws.close();
+      this._ws = null;
+    }
+    this.watching.clear();
+    this.prices.clear();
   }
 }
 
